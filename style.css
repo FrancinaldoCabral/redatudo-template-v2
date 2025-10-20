@@ -1,0 +1,126 @@
+/**
+* Theme Name: Redatudo
+* Description: Redatudo.online template.
+* Author: Naldo cabral
+* Version: 1.0.0
+*/
+
+.scrool-change-color {
+    background-color: white;
+}
+a.button.cancel {
+    margin: 2px;
+}
+a.button.change_payment_method {
+    margin: 2px;
+}
+
+.aff-wrap .wrap{
+    padding: 5px;
+}
+
+.text-justify {
+    text-align: justify !important;
+}
+
+#linha-vertical {
+    height: 200px;
+    border-right: 1px solid red;
+}
+
+#lototype {
+    width: 40px;
+    height: 40px;
+}
+
+/* Notificações WooCommerce — Minimalismo */
+.woocommerce-error, .woocommerce-message, .woocommerce-info {
+  font-family: 'Orbitron', Arial, sans-serif !important;
+  background: #111423f7;
+  color: #00ffd0;
+  font-size: 1em;
+  border-radius: 9px;
+  border: none;
+  box-shadow: none;
+  padding: 0.75em 1.1em 0.75em 2.2em !important;
+  margin: 1em 0 !important;
+  letter-spacing: .02em;
+  line-height: 1.56;
+  position: relative;
+  min-height: unset;
+  transition: background .13s;
+}
+.woocommerce-error:before, .woocommerce-message:before, .woocommerce-info:before {
+  position: absolute; left: 0.93em; top: 0.86em; font-size: 1.09em; opacity:.93;
+}
+.woocommerce-error { color: #ff208e; background: #140f1f; }
+.woocommerce-error:before { content: "⛔"; }
+.woocommerce-message { color: #15ffe0;}
+.woocommerce-message:before { content: "✔️"; }
+.woocommerce-info { color: #22c8fe;}
+.woocommerce-info:before { content: "ℹ️"; }
+
+/* Não ocupa espaço se vazio */
+.woocommerce-error:empty, .woocommerce-message:empty, .woocommerce-info:empty {
+  display: none !important;
+  margin: 0 !important; padding: 0 !important;
+  min-height: 0 !important; background:none !important; box-shadow:none !important;
+}
+
+/* Cupom: minimalista */
+.woocommerce-form-coupon-toggle, .woocommerce-form-coupon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-family:'Orbitron',Arial,sans-serif;
+  padding: 0 0 1.0em 0;
+  margin-bottom: .8em;
+}
+.woocommerce-form-coupon-toggle .woocommerce-info {
+  background: none !important;
+  color: #22c8fe !important;
+  border: none !important;
+  box-shadow:none;
+  padding: 0 !important; margin: 0 !important;
+  font-size: 1em;
+}
+.woocommerce-form-coupon input, .woocommerce-form-coupon button {
+  border-radius: 7px!important;
+  font-family: 'Orbitron', Arial, sans-serif;
+  background: #171727!important;
+  border: none !important;
+  color: #00ffd0!important;
+  padding: .64em 0.9em;
+  font-size: 1em;
+  margin-right: .58em;
+  box-shadow: none !important;
+  transition: background .16s;
+}
+.woocommerce-form-coupon input:focus { background:#14172b!important; color:#00ffd0;}
+.woocommerce-form-coupon button, .checkout #coupon_code ~ button {
+  background: linear-gradient(90deg,#7f00ff 40%,#00bfff 100%);
+  border: none;
+  color: #fff!important;
+  font-weight: 600;
+  padding: .64em 1.4em;
+  border-radius: 9px;
+  font-size: .96em;
+  transition: background .19s, transform .16s;
+  margin-left: 0;
+}
+.woocommerce-form-coupon button:hover {
+  background: linear-gradient(92deg,#00bfff 50%,#7f00ff 100%);
+}
+
+/* Some se vazio */
+.woocommerce-form-coupon-toggle:empty, .woocommerce-form-coupon:empty {
+  display: none !important; margin:0 !important; padding:0 !important;
+}
+
+/* Responsivo */
+@media (max-width:600px) {
+  .woocommerce-error, .woocommerce-message, .woocommerce-info { font-size: .97em; padding-left: 2em !important;}
+  .woocommerce-form-coupon-toggle, .woocommerce-form-coupon { font-size: .96em; }
+}
+
+
