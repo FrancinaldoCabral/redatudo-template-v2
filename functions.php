@@ -2161,21 +2161,6 @@ add_action('woocommerce_cart_calculate_fees', function($cart) {
 }, 100);
 
 // =============================================
-// TRACKING: endpoint + Mautic proxy
-// =============================================
-require_once get_template_directory() . '/redatudo-tracking-endpoint.php';
-
-// user_register → Mautic direto (PHP server-side, sem CORS)
-add_action('user_register', function($user_id) {
-    $user = get_userdata($user_id);
-    if (!$user) return;
-    $contact = rdtd_mautic_get_or_create($user->user_email, $user->display_name);
-    if ($contact) {
-        rdtd_mautic_add_tags((int) $contact['id'], ['rdtd_new_user', 'rdtd_app_wordpress', 'rdtd_event_user_registered']);
-    }
-}, 10, 1);
-
-// =============================================
 // TRACKING: GA4 user_id for logged-in users
 // =============================================
 add_action('wp_head', function() {

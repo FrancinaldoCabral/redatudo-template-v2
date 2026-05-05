@@ -16,57 +16,99 @@
       "name": "Webhook rdtd-events",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [
-        240,
-        400
-      ],
+      "position": [240, 400],
       "webhookId": "rdtd-events-main"
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://redatudo.online/wp-json/rdtd/v1/track",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
+        "assignments": {
+          "assignments": [
             {
-              "name": "x-rdtd-secret",
-              "value": "={{ .RDTD_TRACK_SECRET }}"
+              "id": "f1",
+              "name": "wp_user_id",
+              "value": "={{ $json.body.wp_user_id }}",
+              "type": "number"
             },
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "id": "f2",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "source",
+              "value": "={{ $json.body.source }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "properties",
+              "value": "={{ $json.body.properties }}",
+              "type": "object"
+            },
+            {
+              "id": "f7",
+              "name": "session_id",
+              "value": "={{ $json.body.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "ts",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
             }
           ]
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify() }}",
-        "options": {
-          "timeout": 15000
-        }
+        "options": {}
       },
-      "id": "a1000002-0000-4000-8000-000000000002",
-      "name": "WordPress Tracking Endpoint",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        500,
-        400
-      ],
-      "continueOnFail": true
+      "id": "a1000003-0000-4000-8000-000000000003",
+      "name": "Build Event Document",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "rdtd_events",
+        "options": {}
+      },
+      "id": "a1000004-0000-4000-8000-000000000004",
+      "name": "MongoDB Insert",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [720, 400],
+      "credentials": {
+        "mongoDb": {
+          "id": "PLACEHOLDER_MONGO_CREDENTIAL_ID",
+          "name": "MongoDB rdtd"
+        }
+      }
     }
   ],
   "connections": {
     "Webhook rdtd-events": {
       "main": [
-        [
-          {
-            "node": "WordPress Tracking Endpoint",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Build Event Document", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Event Document": {
+      "main": [
+        [{ "node": "MongoDB Insert", "type": "main", "index": 0 }]
       ]
     }
   }
