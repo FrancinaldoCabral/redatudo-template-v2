@@ -1,0 +1,73 @@
+{
+  "name": "rdtd-events-router",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rdtd-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000001",
+      "name": "Webhook rdtd-events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        400
+      ],
+      "webhookId": "rdtd-events-main"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://redatudo.online/wp-json/rdtd/v1/track",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rdtd-secret",
+              "value": "={{ .RDTD_TRACK_SECRET }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify() }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "a1000002-0000-4000-8000-000000000002",
+      "name": "WordPress Tracking Endpoint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        400
+      ],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Webhook rdtd-events": {
+      "main": [
+        [
+          {
+            "node": "WordPress Tracking Endpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
