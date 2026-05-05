@@ -2169,3 +2169,80 @@ add_action('wp_head', function() {
         echo '<script>if(typeof gtag!=="undefined"){gtag("set",{"user_id":' . intval($user_id) . '});}window._rdtd_uid=' . intval($user_id) . ';</script>' . "\n";
     }
 }, 100);
+
+// =============================================
+// TRACKING: comportamento do usuário → MongoDB
+// Envia eventos server-side para api.redatudo.online/track
+// =============================================
+
+/**
+ * Fire-and-forget POST para o endpoint de tracking.
+ * Usa wp_remote_post com timeout curto para não bloquear a resposta.
+ */
+function rdtd_track(string $event, array $props = [], int $wp_user_id = 0, string $email = ''): void {
+    static $endpoint = 'https://api.redatudo.online/track';
+
+    if (!$wp_user_id && is_user_logged_in()) {
+        $wp_user_id = get_current_user_id();
+    }
+    if (!$email && $wp_user_id) {
+        $user = get_userdata($wp_user_id);
+        if ($user) $email = $user->user_email;
+    }
+
+    wp_remote_post($endpoint, [
+        'method'    => 'POST',
+        'timeout'   => 3,
+        'blocking'  => false, // fire-and-forget: não espera resposta
+        'headers'   => ['Content-Type' => 'application/json'],
+        'body'      => wp_json_encode([
+            'event'      => $event,
+            'wp_user_id' => $wp_user_id ?: null,
+            'email'      => $email ?: null,
+            'source'     => 'wordpress',
+            'properties' => $props,
+        ]),
+    ]);
+}
+
+// — Cadastro
+add_action('user_register', function(int $user_id): void {
+    $user = get_userdata($user_id);
+    if (!$user) return;
+    rdtd_track('user_registered', [
+        'username' => $user->user_login,
+    ], $user_id, $user->user_email);
+}, 10, 1);
+
+// — Login
+add_action('wp_login', function(string $user_login, WP_User $user): void {
+    rdtd_track('user_login', [
+        'username' => $user_login,
+    ], $user->ID, $user->user_email);
+}, 10, 2);
+
+// — Compra WooCommerce concluída
+add_action('woocommerce_payment_complete', function(int $order_id): void {
+    $order = wc_get_order($order_id);
+    if (!$order) return;
+    $items = [];
+    foreach ($order->get_items() as $item) {
+        $items[] = $item->get_name();
+    }
+    rdtd_track('purchase_completed', [
+        'order_id' => $order_id,
+        'total'    => (float) $order->get_total(),
+        'currency' => get_woocommerce_currency(),
+        'products' => implode(', ', $items),
+    ], (int) $order->get_customer_id(), $order->get_billing_email());
+}, 10, 1);
+
+// — Assinatura WooCommerce ativada (se WooCommerce Subscriptions estiver ativo)
+add_action('woocommerce_subscription_status_active', function($subscription): void {
+    $user_id = (int) $subscription->get_customer_id();
+    $email   = $subscription->get_billing_email();
+    rdtd_track('subscription_activated', [
+        'subscription_id' => $subscription->get_id(),
+        'plan'            => $subscription->get_items() ? array_values($subscription->get_items())[0]->get_name() : '',
+    ], $user_id, $email);
+}, 10, 1);
