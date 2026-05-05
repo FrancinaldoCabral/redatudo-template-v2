@@ -336,13 +336,8 @@ a:hover { color:#7f00ff; }
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-8 text-center bg-transparent">
-            <ins class="adsbygoogle"
-                style="display:block; max-height:80px; max-width: 800px"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="6614303361"
-                data-ad-format="horizontal"
-                data-full-width-responsive="true"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            <!-- Afiliado Banner Top -->
+            <?php redatudo_amazon_ad('banner-top'); ?>
         </div>
     </div>
 </div>
@@ -367,15 +362,13 @@ a:hover { color:#7f00ff; }
             ?>
         </div>
 
-        <!-- Banner/CTA destacado -->
-        <div class="banner-cta-home" style="background:linear-gradient(100deg,#7f00ff 60%,#00bfff 98%);
-                color:#fff; border-radius: 20px; box-shadow: 0 4px 22px #00bfff23, 0 2px 6px #7f00ff21;
-                display:flex; align-items:center; gap:1.05em; font-size:1.13em; font-family: 'Orbitron', Arial, sans-serif;
-                padding:1.18em 1em; margin-bottom:2.1em;justify-content:center;">
-            <span style="font-size:1.44em;">🚀</span>
-            <span><b>Redatudo: todo poder da IA em conteúdo & ebooks!</b><br>Clique para explorar recursos AI que viralizam seu conteúdo.</span>
-            <a class="cta-link" href="/ai-assistant" style="background:#101022;color:#00ffd0;font-size:1.1em;padding:.8em 2em;margin-left:1.1em;border-radius:13px;text-decoration:none;">Testar Grátis</a>
+        <!-- Banner Destaque: Todas as 13 Ferramentas -->
+        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: #10B981; margin-bottom: 0.5rem; font-family: 'Orbitron', Arial, sans-serif;">🚀 13 Ferramentas de IA Especializadas</div>
+            <div style="color: #E5E7EB; margin-bottom: 1rem; font-size: 1.05rem;">Do TCC ao Instagram. Do e-commerce ao ebook. Crie conteúdo profissional em segundos.</div>
+            <a href="<?php echo home_url(); ?>/#ferramentas" style="display: inline-block; background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; padding: 0.75rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s;">Ver Todas as Ferramentas →</a>
         </div>
+
 
         <!-- Listagem dos posts da tag -->
         <?php if (have_posts()): ?>
@@ -455,15 +448,9 @@ a:hover { color:#7f00ff; }
             </form>
         </div>
 
-        <!-- AdSense -->
+        <!-- Afiliado Inline -->
         <div style="margin:38px 0;">
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-format="fluid"
-                data-ad-layout-key="-6t+ed+2i-1n-4w"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="3634946494"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            <?php redatudo_amazon_ad('inline'); ?>
         </div>
     </main>
 
@@ -484,38 +471,51 @@ a:hover { color:#7f00ff; }
             <div id="toc-list"></div>
         </section>
 
-        <div class="sidebar-section">
-            <!-- in article -->
-            <ins class="adsbygoogle"
-                style="display:block; text-align:center;"
-                data-ad-layout="in-article"
-                data-ad-format="fluid"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="9129211091"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-
-        <!-- PRODUTOS PRINCIPAIS -->
-        <div class="prod-card">
-            <div class="badge-destaque">LANÇAMENTO</div>
-            <div class="prod-icon">💬</div>
-            <div class="prod-titulo">Agente WhatsApp</div>
-            <div class="prod-desc">Atendimento automatizado e geração de conteúdo IA via WhatsApp.</div>
-            <a href="/agente-whatsapp" class="cta-link">Quero testar 🚀</a>
-        </div>
-        <div class="prod-card">
-            <div class="prod-icon">🤖</div>
-            <div class="prod-titulo">AI Assistant</div>
-            <div class="prod-desc">Crie textos, ebooks, imagens, vídeos e voz com IA top de linha.</div>
-            <a href="/ai-assistant" class="cta-link">Testar Grátis</a>
-        </div>
-        <div class="prod-card">
-            <div class="prod-icon">📘</div>
-            <div class="prod-titulo">Gerador de Ebook</div>
-            <div class="prod-desc">Gere ebooks completos a partir de um tema, pronto para publicar!</div>
-            <a href="/ai-assistant#ebook" class="cta-link">Gerar ebook</a>
+        <!-- TODAS AS 13 FERRAMENTAS -->
+        <div class="sidebar-section" style="background: linear-gradient(145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.8) 100%); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="sidebar-title" style="color: #10B981;">🚀 Nossas Ferramentas</div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0.5rem;">
+                <a href="<?php echo esc_url(redatudo_get_app_url('ebook')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(124, 58, 237, 0.1); border-left: 3px solid #7C3AED; border-radius: 6px; color: #A78BFA !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>📚</span> <span>Gerador de Ebook</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(139, 92, 246, 0.1); border-left: 3px solid #8B5CF6; border-radius: 6px; color: #C4B5FD !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>💡</span> <span>Gerador de Títulos</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(236, 72, 153, 0.1); border-left: 3px solid #EC4899; border-radius: 6px; color: #F9A8D4 !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>📸</span> <span>Legendas Instagram</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3B82F6; border-radius: 6px; color: #93C5FD !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>🎓</span> <span>Gerador de Introdução</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(6, 182, 212, 0.1); border-left: 3px solid #06B6D4; border-radius: 6px; color: #67E8F9 !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>✍️</span> <span>Humanizador de Texto</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10B981; border-radius: 6px; color: #6EE7B7 !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>🛍️</span> <span>ShopCopy</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3B82F6; border-radius: 6px; color: #93C5FD !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>📋</span> <span>Gerador de Temas TCC</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366F1; border-radius: 6px; color: #A5B4FC !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>🔄</span> <span>Reformulador</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(124, 58, 237, 0.1); border-left: 3px solid #7C3AED; border-radius: 6px; color: #A78BFA !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>📝</span> <span>Gerador Copy AIDA</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(139, 92, 246, 0.1); border-left: 3px solid #8B5CF6; border-radius: 6px; color: #C4B5FD !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>✅</span> <span>Corretor ABNT</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid #F59E0B; border-radius: 6px; color: #FCD34D !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>#️⃣</span> <span>Gerador de Hashtags</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(20, 184, 166, 0.1); border-left: 3px solid #14B8A6; border-radius: 6px; color: #5EEAD4 !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>🏁</span> <span>Gerador de Conclusão</span>
+                </a>
+                <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(168, 85, 247, 0.1); border-left: 3px solid #A855F7; border-radius: 6px; color: #D8B4FE !important; text-decoration: none; font-size: 0.9rem; transition: all 0.3s;">
+                    <span>💬</span> <span>Frases Motivacionais</span>
+                </a>
+            </div>
+            <a href="<?php echo home_url(); ?>/#ferramentas" style="display: block; text-align: center; margin-top: 1rem; padding: 0.75rem; background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Ver Detalhes de Cada Ferramenta →</a>
         </div>
         <!-- Destaques -->
         <div class="sidebar-highlights-card">
@@ -543,18 +543,6 @@ a:hover { color:#7f00ff; }
                 <?php } wp_reset_postdata(); ?>
             </ul>
         </div>
-        <div class="sidebar-section" style="margin-bottom:10px;">
-            <!-- novo_layout - display - quadrado 01 -->
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="1391926533"
-                data-ad-format="square"
-                data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
         <!-- Posts recentes -->
         <div class="sidebar-section">
             <div class="sidebar-title">Recentes</div>
@@ -580,18 +568,6 @@ a:hover { color:#7f00ff; }
                 </li>
                 <?php } ?>
             </ul>
-        </div>
-        <div class="sidebar-section" style="margin-bottom:10px;">
-            <!-- novo layout - infeed só texto - lateral -->
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-format="fluid"
-                data-ad-layout-key="-gw-3+1f-3d+2z"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="2459860964"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
         </div>
         <!-- Redes sociais -->
         <div class="sidebar-section widget-socials" style="text-align:center;">
@@ -632,30 +608,21 @@ a:hover { color:#7f00ff; }
             <?php endforeach;?>
             </div>
         </div>
-        <!-- Banner premium/recursos -->
-        <div class="sidebar-section" style="margin-bottom:10px;">
-            <div class="sidebar-title">Acesso Premium & Recursos</div>
-            <div class="ad-sticker-fallback" style="margin-bottom:8px;color:#fff;">
-                <b>🔥 Blog Premium Redatudo:</b> <br>
-                <a href="/blog-premium" style="color:#00ffd0 !important;font-weight:bold;">Tutoriais, estratégias e materiais exclusivos &raquo;</a>
-            </div>
-            <div class="ad-sticker-fallback" style="margin-bottom:8px;color:#fff;">
-                <b>✨ Liberte o poder da IA:</b> <br>
-                <a href="/planos" style="color:#00ffd0 !important;font-weight:bold;">Conheça os planos Pro &raquo;</a>
+        <!-- Planos e Recursos -->
+        <div class="sidebar-section" style="background: linear-gradient(145deg, rgba(16, 185, 129, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="sidebar-title" style="color: #10B981;">✨ Desbloqueie Todo Potencial</div>
+            <div style="padding: 0.5rem 0;">
+                <div style="margin-bottom: 1rem;">
+                    <div style="font-weight: 600; color: #FFFFFF; margin-bottom: 0.5rem;">🎯 Plano Pro</div>
+                    <div style="font-size: 0.875rem; color: #D1D5DB; margin-bottom: 0.75rem;">Gerações ilimitadas em todas as 13 ferramentas</div>
+                    <a href="/planos" style="display: inline-block; background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.875rem;">Ver Planos →</a>
+                </div>
             </div>
         </div>
-        <!-- AdSense sticky final da sidebar -->
-        <div class="sidebar-sticky-ad">
-            <!-- novo layout - display vertical 01 -->
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-9848635946946970"
-                data-ad-slot="1373175853"
-                data-ad-format="vertical"
-                data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+
+        <!-- Afiliado Sidebar -->
+        <div class="sidebar-section" style="margin-bottom:10px;">
+            <?php redatudo_amazon_ad('sidebar'); ?>
         </div>
     </aside>
 </div>

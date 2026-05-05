@@ -17,75 +17,10 @@ $allowed_html = [
 	'strong'=>[], 'br'=>[]
 ];
 
-// -- INTEGRAÇÕES REDATUDO (SOCIAL LOGIN/App/Tokens) -----------------------------
+// Removed old functions: redatudo_is_social_linked_registration, redatudo_is_local_registration_verified, redatudo_is_login_app
+// Now handled by redatudo-auth.php plugin via hooks
 
-/**
- * Social linked registration + evento analytics + redirect smart
- */
-function redatudo_is_social_linked_registration() {
-	$user = wp_get_current_user();
-	global $wpdb;
-	$table = 'wp_mo_openid_linked_user';
-	$query = "SELECT * FROM $table WHERE user_id=" . intval($user->ID);
-	$is_activate = get_user_meta($user->ID, 'alg_wc_ev_is_activated', true);
-	$results = $wpdb->get_results($query);
-	if (count($results) > 0 && $is_activate == 0) {
-		update_user_meta($user->ID, 'alg_wc_ev_is_activated', 1);
-		echo '<script>window.dataLayer = window.dataLayer || [];window.dataLayer.push({event: "sign_up", signupMethod:"social login"});window.location="https://chat.redatudo.online/?token='.token_generate().'";</script>';
-	}
-}
-redatudo_is_social_linked_registration();
-
-/**
- * Registro local e verificação de e-mail ativada
- */
-function redatudo_is_local_registration_verified() {
-	if (!empty($_GET["alg_wc_ev_success_activation_message"])) {
-		echo '<script>window.dataLayer = window.dataLayer || [];window.dataLayer.push({event: "sign_up", signupMethod:"cadastro no site"});window.location="https://chat.redatudo.online/?token='.token_generate().'";</script>';
-	}
-}
-redatudo_is_local_registration_verified();
-
-/**
- * Login/registro via APP e deep links
- */
-function redatudo_is_login_app() {
-	$login_app = $_GET["login_app"] ?? null;
-	if (!$login_app || !is_user_logged_in()) return;
-
-	// Script/redirect para chat por métodos diferentes
-	$token = token_generate();
-	$url_map = [
-		'1'     => "https://chat.redatudo.online/?token={$token}",
-		'chat'  => "https://chat.redatudo.online/?token={$token}",
-		'zap-agent'  => "https://zap-agent.redatudo.online/?token={$token}",
-		'testIChat321' => "http://localhost:4200/?token={$token}"
-	];
-	if (array_key_exists($login_app, $url_map)) {
-		echo '<script>window.dataLayer = window.dataLayer || [];window.dataLayer.push({event: "login", method:"app redirect"});window.location="'.$url_map[$login_app].'";</script>';
-	}
-}
-redatudo_is_login_app();
-
-// -- FUNÇÕES DE ASSINATURAS E PROMO -------------------------------
-
-/**
- * Verifica se há assinatura ativa (Woo Subscriptions ou afim)
- */
-function redatudo_has_active_subscription( $user_id = null ) {
-	if ($user_id === null && is_user_logged_in()) $user_id = get_current_user_id();
-	if (!$user_id) return false;
-	// Assinatura ativa? (apenas wc-active)
-	$subs = get_posts([
-		'numberposts' => 1,
-		'meta_key'    => '_customer_user',
-		'meta_value'  => $user_id,
-		'post_type'   => 'shop_subscription',
-		'post_status' => 'wc-active',
-		'fields'      => 'ids',
-	]);
-	return !empty($subs);
-}
+// Removed redatudo_has_active_subscription() - now in redatudo-auth.php plugin
 ?>
 
 <style>
@@ -135,7 +70,7 @@ function redatudo_has_active_subscription( $user_id = null ) {
     .affiliate-btn { margin-top:0.7em; }
 </style>
 
-<div class="container myaccount-hero">
+<div class="container-fluid myaccount-hero">
 
     <h1>🎉 Bem-vindo a Redatudo</h1>
     <p>
@@ -152,14 +87,21 @@ function redatudo_has_active_subscription( $user_id = null ) {
 
     <p style="color:#b8e6ff;">
         Olá, você está no dashboard da sua conta Redatudo!
-        <br>Gerencie assinaturas, créditos, sua conta, <strong>acesso instantâneo ao AI Assistant</strong> e até seu link de afiliado Recorrente.
+        <br>Gerencie assinaturas, créditos, sua conta, <strong>acesso instantâneo ao Hub</strong> e até seu link de afiliado Recorrente.
     </p>
+</div>
+
+<!-- Banner Destaque: Todas as 13 Ferramentas -->
+<div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 1.5rem; margin-bottom: 2.5rem; text-align: center;">
+    <div style="font-size: 1.5rem; font-weight: 700; color: #10B981; margin-bottom: 0.5rem; font-family: 'Orbitron', Arial, sans-serif;">🚀 13 Ferramentas de IA Especializadas</div>
+    <div style="color: #E5E7EB; margin-bottom: 1rem; font-size: 1.05rem; font-family: 'Inter', sans-serif;">Do TCC ao Instagram. Do e-commerce ao ebook. Crie conteúdo profissional em segundos.</div>
+    <a href="<?php echo home_url(); ?>/#ferramentas" style="display: inline-block; background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; padding: 0.75rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s; font-family: 'Inter', sans-serif;">Ver Todas as Ferramentas →</a>
 </div>
 
 <div class="row">
 
     <!-- Minha conta - lado esquerdo -->
-    <div class="col-12 col-lg-6">
+    <div class="col-12">
 
         <div class="myaccount-info-box">
             <h3>Conta & Navegação</h3>
@@ -177,8 +119,8 @@ function redatudo_has_active_subscription( $user_id = null ) {
             </p>
 
             <p>
-                <span class="d-block mb-2" style="font-weight:600;">🚀 Seu AI Assistant está online:</span>
-                <button type="button" class="myaccount-action-btn" id="acessar-ia-btn">Abrir AI Assistant</button>
+                <span class="d-block mb-2" style="font-weight:600;">🚀 Seu Hub está online:</span>
+                <button type="button" class="myaccount-action-btn" id="acessar-ia-btn">Abrir Hub</button>
             </p>
         </div>
 
@@ -213,13 +155,13 @@ function redatudo_has_active_subscription( $user_id = null ) {
         <?php
         // Verifica ID programa de afiliado direto My Account
         global $wpdb;
-        $table = 'wp_wpam_affiliates';
-        $query = 'SELECT affiliateId FROM ' . $table . ' WHERE email="' . esc_sql($user->user_email) . '"';
-        $results = $wpdb->get_results($query);
+        $table = $wpdb->prefix . 'wpam_affiliates';
+        $query = $wpdb->prepare( "SELECT affiliateId FROM {$table} WHERE email = %s", $user->user_email );
+        $results = $wpdb->get_results( $query );
         $affiliate = $results[0] ?? null;
-        if ($affiliate && isset($affiliate->affiliateId)) {
-            $oneUrl = 'https://redatudo.online?wpam_id='.$affiliate->affiliateId;
-            $twoUrl = 'https://www.facebook.com/sharer/sharer.php?u='.urlencode($oneUrl);
+        if ( $affiliate && isset( $affiliate->affiliateId ) ) {
+            $oneUrl = 'https://redatudo.online?wpam_id=' . intval( $affiliate->affiliateId );
+            $twoUrl = 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode( $oneUrl );
         }
         ?>
         <div class="affiliate-box">
@@ -246,7 +188,7 @@ function redatudo_has_active_subscription( $user_id = null ) {
 
 <script>
 document.getElementById('acessar-ia-btn').onclick = function() {
-    window.location = "https://chat.redatudo.online/?token=<?php echo token_generate(); ?>";
+    window.location = "<?php echo esc_url(redatudo_get_app_url('hub')); ?>";
 };
 </script>
 
@@ -257,4 +199,3 @@ document.getElementById('acessar-ia-btn').onclick = function() {
 do_action( 'woocommerce_account_dashboard' );
 do_action( 'woocommerce_before_my_account' );
 do_action( 'woocommerce_after_my_account' );
-

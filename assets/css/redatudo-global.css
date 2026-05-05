@@ -1,0 +1,504 @@
+/**
+ * Redatudo Global Design System
+ * Sistema de design unificado para todo o site
+ */
+
+/* ========================================
+   IMPORTAÇÃO DE FONTES
+   ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+/* ========================================
+   VARIÁVEIS CSS GLOBAIS
+   ======================================== */
+:root {
+  /* Cores Primárias */
+  --roxo-ia: #7C3AED;
+  --roxo-dark: #7f00ff;
+  --azul-tech: #3B82F6;
+  --azul-cyan: #00bfff;
+  --verde-destaque: #10B981;
+  --verde-dark: #059669;
+  
+  /* Cores de Fundo */
+  --preto-fundo: #0F0F1A;
+  --preto-section: #161622;
+  --card-bg: #1F2937;
+  --card-bg-hover: #252F3F;
+  
+  /* Cores de Texto */
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E7EB;
+  --text-muted: #D1D5DB;
+  --text-light: #9CA3AF;
+  --azul-glow: #00ffd0;
+  
+  /* Cores de Borda */
+  --border-color: #374151;
+  --border-hover: #7C3AED;
+  
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+  --gradient-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --gradient-gold: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  --gradient-hot: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 12px rgba(0, 191, 255, 0.15);
+  --shadow-md: 0 4px 24px rgba(124, 58, 237, 0.25);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.3);
+  
+  /* Tipografia */
+  --font-heading: 'Outfit', 'Orbitron', Arial, sans-serif;
+  --font-body: 'Inter', 'Orbitron', Arial, sans-serif;
+  
+  /* Border Radius */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  /* Transições */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   ESTILOS BASE GLOBAIS
+   ======================================== */
+body {
+  background: radial-gradient(ellipse at top right, #1c1441 40%, #161234 100%);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  box-shadow: 0 0 16vw 0 rgba(0, 191, 255, 0.12) inset;
+}
+
+/* ========================================
+   TIPOGRAFIA GLOBAL
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ========================================
+   COMPONENTES: BADGES
+   ======================================== */
+.badge-reda,
+.badge-hot,
+.badge-new,
+.badge-popular {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 7px;
+  padding: 0.12em 0.48em;
+  margin: 0.11em 0.14em;
+  border: 1px solid var(--border-color);
+  opacity: 0.86;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: background var(--transition-fast), 
+              color var(--transition-fast), 
+              box-shadow var(--transition-fast);
+  letter-spacing: 0.1px;
+}
+
+.badge-reda {
+  background: #161b28;
+  color: #a0addd;
+}
+
+.badge-reda:hover {
+  background: #232948;
+  color: var(--azul-glow);
+  box-shadow: 0 1px 4px rgba(0, 255, 208, 0.075);
+}
+
+.badge-hot {
+  background: var(--gradient-hot);
+  color: #FFFFFF;
+  border: 2px solid #DC2626;
+}
+
+.badge-new {
+  background: var(--gradient-primary);
+  color: #FFFFFF;
+  border: 2px solid var(--azul-tech);
+}
+
+.badge-popular {
+  background: var(--gradient-hot);
+  color: #FFFFFF;
+  padding: 0.6rem 1.75rem;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.6);
+  border: 3px solid var(--card-bg);
+}
+
+/* ========================================
+   COMPONENTES: CARDS
+   ======================================== */
+.reda-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: visible;
+}
+
+.reda-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  background: var(--card-bg-hover);
+}
+
+/* Tool Card */
+.tool-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem 2rem;
+  position: relative;
+  transition: all var(--transition-normal);
+  margin-top: 1rem;
+  text-decoration: none;
+  display: block;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--tool-color, var(--roxo-ia));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.tool-card:hover::before {
+  opacity: 1;
+}
+
+.tool-card:hover {
+  border-color: var(--tool-color, var(--roxo-ia));
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  background: var(--card-bg-hover);
+  text-decoration: none;
+}
+
+.tool-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--tool-color, var(--roxo-ia));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.tool-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-heading);
+}
+
+.tool-description {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-body);
+}
+
+/* ========================================
+   COMPONENTES: BOTÕES
+   ======================================== */
+.btn-reda-primary,
+.btn-cta-primary {
+  background: var(--gradient-success);
+  color: #FFFFFF;
+  padding: 1rem 2.5rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: none;
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-family: var(--font-body);
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn-reda-primary::before,
+.btn-cta-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-reda-primary:hover::before,
+.btn-cta-primary:hover::before {
+  left: 100%;
+}
+
+.btn-reda-primary:hover,
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.btn-reda-secondary,
+.btn-cta-secondary {
+  background: white;
+  color: var(--roxo-ia);
+  padding: 1rem 2.5rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--roxo-ia);
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-family: var(--font-body);
+  transition: all var(--transition-normal);
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn-reda-secondary:hover,
+.btn-cta-secondary:hover {
+  background: var(--roxo-ia);
+  color: white;
+  text-decoration: none;
+}
+
+/* ========================================
+   COMPONENTES: SEÇÕES
+   ======================================== */
+.reda-section {
+  background: var(--preto-fundo);
+  position: relative;
+  z-index: 1;
+  padding: 4rem 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.reda-section-alt {
+  background: var(--preto-section);
+  position: relative;
+  z-index: 1;
+  padding: 4rem 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.section-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  font-family: var(--font-body);
+  text-align: center;
+}
+
+.section-badge {
+  display: inline-block;
+  background: rgba(124, 58, 237, 0.15);
+  color: #A78BFA;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  font-family: var(--font-body);
+}
+
+/* ========================================
+   EFEITOS: GRADIENT TEXT
+   ======================================== */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-success {
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   EFEITOS: GLOW
+   ======================================== */
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 70vw;
+  height: 25vw;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(0, 191, 255, 0.06) 0%, rgba(127, 0, 255, 0.08) 50%, transparent 100%);
+  filter: blur(32px);
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+  animation: pulseGlow 6s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.7; }
+  100% { opacity: 0.4; }
+}
+
+/* ========================================
+   GRID LAYOUTS
+   ======================================== */
+.reda-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.reda-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.reda-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+@media (max-width: 768px) {
+  .reda-grid-2,
+  .reda-grid-3,
+  .reda-grid-4 {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .reda-card,
+  .tool-card {
+    padding: 1.5rem;
+  }
+  
+  .btn-reda-primary,
+  .btn-reda-secondary,
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ========================================
+   UTILITÁRIOS
+   ======================================== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mt-5 { margin-top: 3rem; }
+
+.py-3 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.py-4 { padding-top: 2rem; padding-bottom: 2rem; }
+.py-5 { padding-top: 3rem; padding-bottom: 3rem; }
+
+.px-3 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.px-4 { padding-left: 2rem; padding-right: 2rem; }
+
+/* ========================================
+   ANIMAÇÕES
+   ======================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}

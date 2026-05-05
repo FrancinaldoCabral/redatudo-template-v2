@@ -23,11 +23,13 @@ if ( ! $notices ) {
 	return;
 }
 
+$error_style = 'background: linear-gradient(145deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid rgba(239, 68, 68, 0.4); border-left: 5px solid #EF4444; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; font-family: Inter, sans-serif; font-size: 1.05rem; color: #FECACA; line-height: 1.6; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);';
+
 ?>
 
-<ul class="woocommerce-error" role="alert">
+<ul class="woocommerce-error" role="alert" style="list-style: none; padding: 0; margin: 0 0 2rem 0;">
 	<?php foreach ( $notices as $notice ) : ?>
-		<li<?php echo wc_get_notice_data_attr( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+		<li style="<?php echo esc_attr( $error_style ); ?>"<?php echo wc_get_notice_data_attr( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 			<?php echo wc_kses_notice( $notice['notice'] ); ?>
 		</li>
 	<?php endforeach; ?>

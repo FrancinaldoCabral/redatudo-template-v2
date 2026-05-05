@@ -213,6 +213,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 .rdt-form-min .login-help strong { color: var(--azul-glow);}
 </style>
 
+<div style="max-width:870px;margin:0 auto 16px auto;"><?php wc_print_notices(); ?></div>
+
 <div class="redatudo-login-clean">
   <!-- Social Login -->
   <div class="rdt-login-social-min">
@@ -232,6 +234,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
     <div id="tab-login-min" style="display:block">
       <form method="post" class="rdt-form-min login">
         <?php do_action( 'woocommerce_login_form_start' ); ?>
+        <?php $redatudo_login_app = isset( $_GET['login_app'] ) ? sanitize_text_field( $_GET['login_app'] ) : ( isset( $_COOKIE['redatudo_login_app'] ) ? sanitize_text_field( $_COOKIE['redatudo_login_app'] ) : '' ); ?>
+        <?php if ( ! empty( $redatudo_login_app ) ) : ?>
+          <input type="hidden" name="login_app" value="<?php echo esc_attr( $redatudo_login_app ); ?>">
+        <?php endif; ?>
         <div class="input-group">
           <label for="login_email">E-mail <span class="required">*</span></label>
           <input type="text" name="username" id="login_email" autocomplete="username" placeholder="Seu email" value="<?php if ( ! empty( $_POST['username'] ) ) echo esc_attr( $_POST['username'] ); ?>">
@@ -260,6 +266,9 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
     <div id="tab-register-min" style="display:none">
       <form method="post" class="rdt-form-min register">
         <?php do_action( 'woocommerce_register_form_start' ); ?>
+        <?php if ( ! empty( $redatudo_login_app ) ) : ?>
+          <input type="hidden" name="login_app" value="<?php echo esc_attr( $redatudo_login_app ); ?>">
+        <?php endif; ?>
         <?php if ( 'no' === get_option( 'woocommerce_registration_generate_username' ) ) : ?>
         <div class="input-group">
           <label for="reg_username">Usuário <span class="required">*</span></label>

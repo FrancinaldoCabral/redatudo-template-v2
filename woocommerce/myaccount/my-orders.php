@@ -34,6 +34,10 @@ $customer_orders = get_posts(
 
 if ( $customer_orders ) : ?>
 
+<style>
+	
+</style>
+
 <div class="container">
 	<div class="row">
 		<div class="col">

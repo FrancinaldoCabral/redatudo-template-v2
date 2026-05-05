@@ -1,78 +1,6 @@
-<?php 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
-function token_generate(){
-	$user = wp_get_current_user(  );
-	//print_r($teste) ;
-	//echo JWT_AUTH_SECRET_KEY;
-	$secret_key = JWT_AUTH_SECRET_KEY;
-	$algorithm = apply_filters( 'jwt_auth_algorithm', 'HS256' );
-	$issuedAt  = time();
-	$notBefore = apply_filters( 'jwt_auth_not_before', $issuedAt, $issuedAt );
-	$expire    = apply_filters( 'jwt_auth_expire', $issuedAt + ( DAY_IN_SECONDS * 7 ), $issuedAt );
-
-	$token = [
-		'iss'  => get_bloginfo( 'url' ),
-		'iat'  => $issuedAt,
-		'nbf'  => $notBefore,
-		'exp'  => $expire,
-		'data' => [
-			'user' => [
-				'id' => $user->data->ID,
-			],
-		],
-	];
-
-	$token = JWT::encode(
-		apply_filters( 'jwt_auth_token_before_sign', $token, $user ),
-		$secret_key,
-		$algorithm
-	);
-	return $token;
-}
-
-function clear_token_url(){
-    echo '<script>var newURL = location.href.split("?")[0]; window.history.pushState("object", document.title, newURL);</script>';
-}
-
-function is_myaccount(){
-	$token = $_GET["token"];
-	if(isset($token)){
-        clear_token_url();
-		$autorizaztion = 'Bearer '. $token;
-		if(!is_user_logged_in(  )){
-			//verify token
-			$request = new WP_REST_Request ( 'POST' , '/jwt-auth/v1/token/validate' );
-			$request->set_header( 'content-type', 'application/json' );
-			$request->set_header( 'Authorization', $autorizaztion );
-			//$request->set_body( $json_data );
-			$response = rest_do_request( $request );
-			$server = rest_get_server();
-			$data = $server->response_to_data( $response, false );
-			//$valid = wp_json_encode( $data );
-
-			if(isset($data['code']) && $data['code'] == 'jwt_auth_valid_token'){
-				$request = new WP_REST_Request ( 'GET' , '/api/v1/me' );
-				//$request->set_header( 'content-type', 'application/json' );
-				$request->set_header( 'Authorization', $autorizaztion );
-				//$request->set_body( $json_data );
-				$response = rest_do_request( $request );
-				$server = rest_get_server();
-				$data = $server->response_to_data( $response, false );
-                $decoded = JWT::decode($token, new Key(JWT_AUTH_SECRET_KEY, 'HS256'));
-				//$user = wp_json_encode( $data );
-				if( isset($decoded->data->id) ) {
-                    $user = get_user_by( 'id', $decoded->data->id);
-                    wp_set_current_user( $decoded->data->id, $user->user_login );
-                    wp_set_auth_cookie( $decoded->data->id );
-					//do_action( 'wp_login', $user->user_login );
-				}
-			}
-		}
-	}
-}
-
+<?php
+// Removed old functions: token_generate, clear_token_url, is_myaccount
+// Now handled by redatudo-auth.php plugin
 ?>
 <!DOCTYPE html>
 <html lang="br">
@@ -95,7 +23,6 @@ function is_myaccount(){
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<?php is_myaccount(); ?>
 
 <!-- SEO, Schema e avaliações dinâmicas -->
 <?php 
@@ -127,36 +54,52 @@ function is_myaccount(){
 }
 </script>
 
-<!-- Google Ads -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9848635946946970"
-     crossorigin="anonymous"></script>
-
 <?php wp_head(); ?>
 
-<!-- Estilo visual Redatudo -->
+<?php if ( is_single() ) : ?>
+<!-- Mautic tracking (URL: replace MAUTIC_URL with your Mautic instance URL) -->
+<script>
+(function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
+w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},
+a=d.createElement(t),m=d.getElementsByTagName(t)[0];
+a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://conteudo.redatudo.online/mtc.js','mt');
+mt('send', 'pageview');
+</script>
+<?php endif; ?>
+
+<!-- Estilo visual Redatudo 2.0 - Sistema Unificado -->
 <style>
-:root {
-  --roxo-ia: #7f00ff;
-  --azul-tech: #00bfff;
-  --preto-fundo: #0d0d13;
-  --azul-glow: #00ffd0;
-}
+/* Sobrescrever estilos específicos do tema - mantém compatibilidade */
 html {
-    background: var(--preto-fundo);
+    background: #0F0F1A;
     color-scheme: dark;
 }
+
 body {
-    background: radial-gradient(ellipse at top right, #1c1441 40%, #161234 100%);
+    background: #0F0F1A !important;
     color: #f2f6fa;
-    font-family: 'Orbitron', Arial, sans-serif;
+    font-family: 'Inter', 'Orbitron', Arial, sans-serif !important;
     min-height: 100vh;
-    /* Suave glow padrão site */
-    box-shadow: 0 0 16vw 0 #00bfff20 inset;
 }
-h1, h2, h3, h4, .navbar-brand, .recursos-title, .casos-title {
-    font-family: 'Orbitron', Arial, sans-serif !important;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+
+/* Garante que títulos usem Outfit ao invés de Orbitron */
+h1, h2, h3, h4, h5, h6, 
+.navbar-brand, 
+.recursos-title, 
+.casos-title,
+.section-title,
+.hero-title,
+.tool-title {
+    font-family: 'Outfit', 'Orbitron', Arial, sans-serif !important;
+    font-weight: 700;
+    letter-spacing: -0.02em !important;
+    text-transform: none !important;
+}
+
+/* Texto do corpo usa Inter */
+p, span, div, a, li, td, th {
+    font-family: 'Inter', 'Orbitron', Arial, sans-serif;
 }
 .navbar {
     background: #171727f7 !important;
@@ -398,10 +341,24 @@ html, body {
       &#9776;
     </button>
     <div class="checkout-mini-dropdown" id="checkoutMiniDropdown" role="menu">
-      <a href="https://redatudo.online/product/credits/">Credits</a>
-      <a href="https://redatudo.online/?post_type=product&p=24795&preview=true">Unlimited</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('ebook')); ?>" target="_blank">📚 Gerador de Ebook</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">💡 Gerador de Títulos</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">📸 Legendas Instagram</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">🎓 Gerador de Introdução</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">✍️ Humanizador de Texto</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">🛍️ ShopCopy</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">📋 Gerador de Temas TCC</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">🔄 Reformulador</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">📝 Gerador Copy AIDA</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">✅ Corretor ABNT</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">#️⃣ Gerador de Hashtags</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">🏁 Gerador de Conclusão</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">💬 Frases Motivacionais</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">📖 Nomes de Livros</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">@ Gerador de Username</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">💭 Gerador de Ideias</a>
       <hr>
-      <a href="https://chat.redatudo.online">← AI Assistant</a>
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" target="_blank">← Hub</a>
     </div>
   </div>
   <script>
@@ -453,17 +410,12 @@ html, body {
               <span style="font-family:'Orbitron',sans-serif;letter-spacing:1px;">Afiliados</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?php echo get_option('home'); ?>#precos">
-              <span style="font-family:'Orbitron',sans-serif;letter-spacing:1px;">Preços</span>
-            </a>
-          </li>
         </ul>
 
         <!-- LOGIN/USUÁRIO -->
         <div class="ms-lg-4 mt-3 mt-lg-0">
           <?php if(!is_user_logged_in()): ?>
-            <a href="https://redatudo.online/minha-conta?login_app=chat" class="btn btn-primary px-4 py-2 fw-bold" id="btnEntrar"
+            <a href="https://redatudo.online/minha-conta" class="btn btn-primary px-4 py-2 fw-bold" id="btnEntrar"
                style="font-family:'Orbitron',sans-serif;font-size:1.1rem;border-radius:22px;box-shadow:0 2px 14px #00bfff40;letter-spacing:1px;">
               Entrar
             </a>
@@ -479,9 +431,9 @@ html, body {
                     <?php $user = wp_get_current_user(); echo '🟢 '.$user->user_email; ?>
                   </span>
                 </li>
-                <li><a class="dropdown-item" href="https://chat.redatudo.online/?token=<?php echo token_generate(); ?>">Começar</a></li>
+                <li><a class="dropdown-item" href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>">Começar</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="<?php echo wp_logout_url( 'https://redatudo.online/minha-conta?login_login_app=chat' ); ?>">Sair</a></li>
+                <li><a class="dropdown-item" href="<?php echo wp_logout_url( 'https://redatudo.online/minha-conta?login_app=hub' ); ?>">Sair</a></li>
               </ul>
             </div>
             <div class="btn-group d-block d-lg-none">
@@ -495,8 +447,8 @@ html, body {
                     <?php $user = wp_get_current_user(); echo '🟢 '.$user->user_email; ?>
                   </span>
                 </li>
-                <li><a class="dropdown-item" href="https://chat.redatudo.online/?token=<?php echo token_generate(); ?>">Começar</a></li>
-                <li><a class="dropdown-item" href="<?php echo wp_logout_url( 'https://redatudo.online/minha-conta?login_login_app=chat' ); ?>">Sair</a></li>
+                <li><a class="dropdown-item" href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>">Começar</a></li>
+                <li><a class="dropdown-item" href="<?php echo wp_logout_url( 'https://redatudo.online/minha-conta?login_app=hub' ); ?>">Sair</a></li>
               </ul>
             </div>
           <?php endif; ?>
@@ -512,7 +464,7 @@ html, body {
     if(btnEntrar) {
       btnEntrar.addEventListener("click", function(e){
         // para Single Page Application não recarregar à toa
-        window.location.href = "https://redatudo.online/minha-conta?login_login_app=chat";
+        window.location.href = "<?php echo esc_url(redatudo_get_app_url('hub')); ?>";
       });
     }
   </script>

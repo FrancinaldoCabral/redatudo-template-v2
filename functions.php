@@ -1,4 +1,415 @@
 <?php
+// Include the custom auth plugin
+include_once get_template_directory() . '/redatudo-auth.php';
+// Bot protection (rate limiting, honeypot, disposable email blocking)
+include_once get_template_directory() . '/redatudo-bot-protection.php';
+
+// Generate JWT token function (fallback if plugin not loaded)
+if (!function_exists('redatudo_generate_token')) {
+    function redatudo_generate_token() {
+        if (!class_exists('Firebase\JWT\JWT')) {
+            return '';
+        }
+        $user = wp_get_current_user();
+        if (!$user->ID) {
+            return '';
+        }
+        $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : 'your-secret-key';
+        $algorithm = 'HS256';
+        $issued_at = time();
+        $not_before = $issued_at;
+        $expire = $issued_at + (DAY_IN_SECONDS * 7);
+        $token = [
+            'iss' => get_bloginfo('url'),
+            'iat' => $issued_at,
+            'nbf' => $not_before,
+            'exp' => $expire,
+            'data' => [
+                'user' => [
+                    'id' => $user->ID,
+                ],
+            ],
+        ];
+        return \Firebase\JWT\JWT::encode($token, $secret_key, $algorithm);
+    }
+}
+
+/**
+ * Get app URL with authentication handling
+ * Centralizes all app links in the system
+ * 
+ * @param string $app_id App identifier (chat, ebook, titles, etc)
+ * @return string URL to the app with token if logged in, or login redirect if not
+ */
+if (!function_exists('redatudo_get_app_url')) {
+    function redatudo_get_app_url($app_id = 'chat') {
+        // App URL configuration
+        $app_urls = [
+            'ebook' => 'https://ebook.redatudo.online',
+            'chat' => 'https://chat.redatudo.online',
+            'hub' => 'https://hub.redatudo.online',
+            // Default fallback for any app not specifically mapped
+            'default' => 'https://hub.redatudo.online',
+        ];
+
+        // Allow filtering the app URLs configuration
+        $app_urls = apply_filters('redatudo_app_urls', $app_urls);
+
+        // Get the appropriate URL for this app
+        $base_url = isset($app_urls[$app_id]) ? $app_urls[$app_id] : $app_urls['default'];
+
+        // If user is logged in, add token
+        if (is_user_logged_in()) {
+            $token = redatudo_generate_token();
+            return $base_url . '?token=' . esc_attr($token);
+        }
+
+        // If not logged in, redirect to login page with app parameter
+        $login_page_url = get_permalink(get_option('woocommerce_myaccount_page_id'));
+        return add_query_arg('login_app', $app_id, $login_page_url);
+    }
+}
+/**
+ * Renderiza uma lista de indicações Amazon no estilo "anúncio de texto".
+ *
+ * ── COMO ADICIONAR SEUS LINKS ─────────────────────────────────────────────────
+ *  1. Acesse https://associados.amazon.com.br → "Ferramentas de link"
+ *  2. Encontre o produto e copie o "Link Curto" (ex.: https://amzn.to/XXXXX)
+ *     ou a URL do produto + ?tag=SUA-TAG-20 no final
+ *  3. Cole no campo 'url' do item correspondente no $catalog abaixo
+ *  4. Se quiser adicionar mais produtos, duplique um bloco e escolha uma
+ *     chave nova (ex.: 'seo-tecnico')
+ *
+ * ── ONDE APARECEM OS ANÚNCIOS ────────────────────────────────────────────────
+ *  Cada placement define qual grupo de produtos exibir:
+ *    hero / banner-top → grupo 'ia'    (artigos de IA)
+ *    inline / sidebar  → grupo 'copy'  (copywriting + marketing)
+ *    sidebar-2 / final → grupo 'prod'  (produtividade + ferramentas)
+ *  Para forçar um grupo: redatudo_amazon_ad('inline', ['group' => 'ia'])
+ *  Para forçar produto único: redatudo_amazon_ad('inline', ['product' => 'copywriting'])
+ *
+ * @param string $placement  Slot: banner-top | inline | sidebar | sidebar-2 | final | hero
+ * @param array  $args       ['group' => string] ou ['product' => string]
+ */
+if ( ! function_exists( 'redatudo_amazon_ad' ) ) {
+    function redatudo_amazon_ad( $placement = 'default', $args = [] ) {
+
+        // ═══════════════════════════════════════════════════════════════════
+        // CATÁLOGO — edite os 'url' com seus links de afiliado da Amazon
+        // ═══════════════════════════════════════════════════════════════════
+        $catalog = apply_filters( 'redatudo_amazon_catalog', [
+
+            // ── Grupo: IA & Tecnologia ─────────────────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Computação, mai/2026
+            'cointeligencia' => [
+                'url'   => 'https://amzn.to/4dkIqCJ', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Cointeligência — A vida e o trabalho com IA',
+                'desc'  => 'O guia definitivo para trabalhar COM a IA — não ser substituído por ela. Best-seller em Computação, ★4.7.',
+                'cat'   => 'IA & Trabalho',
+                'group' => 'ia',
+            ],
+            'proxima-onda' => [
+                'url'   => 'https://amzn.to/4urU704', // ← COLE SEU LINK (+?tag=)
+                'title' => 'A Próxima Onda — IA, poder e o maior dilema do século',
+                'desc'  => 'Escrito pelo cofundador do DeepMind: como a IA vai transformar tudo. 1.100 avaliações ★4.6.',
+                'cat'   => 'IA & Futuro',
+                'group' => 'ia',
+            ],
+            'nexus' => [
+                'url'   => 'https://amzn.to/4usxh8y', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Nexus — Yuval Noah Harari',
+                'desc'  => 'Do autor de Sapiens: como as redes de informação moldaram a história — e o que a IA muda nisso. 3.800 avaliações ★4.7.',
+                'cat'   => 'IA & Sociedade',
+                'group' => 'ia',
+            ],
+            'maquina-pensa' => [
+                'url'   => 'https://amzn.to/4d2CgFZ', // ← COLE SEU LINK (+?tag=)
+                'title' => 'A Máquina que Pensa — Jensen Huang e a Nvidia',
+                'desc'  => 'A história real do chip mais cobiçado do mundo e da corrida pela IA. Best-seller em alta ★4.8.',
+                'cat'   => 'IA & Tecnologia',
+                'group' => 'ia',
+            ],
+            'singularidade' => [
+                'url'   => 'https://amzn.to/4weTQQ0', // ← COLE SEU LINK (+?tag=) — Kindle
+                'title' => 'A Singularidade está mais Próxima — Ray Kurzweil',
+                'desc'  => 'A previsão mais ousada sobre a fusão entre humanos e IA para a próxima década. ★4.7.',
+                'cat'   => 'IA & Futuro',
+                'group' => 'ia',
+            ],
+
+            // ── Grupo: Copywriting & Marketing ────────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Computação + Marketing e Vendas, mai/2026
+            'gatilhos-mentais' => [
+                'url'   => 'https://amzn.to/4cPPd7l', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Gatilhos Mentais — Gustavo Ferreira',
+                'desc'  => 'Estratégias de persuasão aplicadas a negócios e comunicação. 18.000+ avaliações ★4.6.',
+                'cat'   => 'Copywriting',
+                'group' => 'copy',
+            ],
+            'brevidade-inteligente' => [
+                'url'   => 'https://www.amazon.com.br/dp/6555646659', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Brevidade Inteligente — Dizer muito com poucas palavras',
+                'desc'  => 'O método dos fundadores do Axios para escrever textos que as pessoas realmente leem. ★4.6.',
+                'cat'   => 'Escrita & Conteúdo',
+                'group' => 'copy',
+            ],
+            'marketing60' => [
+                'url'   => 'https://amzn.to/4d4g2U9', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Marketing 6.0 — O futuro é imersivo',
+                'desc'  => 'Kotler sobre metaverso, Web3 e IA no marketing. Como eliminar fronteiras entre físico e digital. 580 avaliações ★4.8.',
+                'cat'   => 'Marketing Digital',
+                'group' => 'copy',
+            ],
+            'marketing50' => [
+                'url'   => 'https://amzn.to/3QO3ZmA', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Marketing 5.0 — Tecnologia para a humanidade',
+                'desc'  => 'Como usar IA, dados e automação para criar experiências de marketing irresistíveis. 2.700 avaliações ★4.8.',
+                'cat'   => 'Marketing Digital',
+                'group' => 'copy',
+            ],
+            'logica-consumo' => [
+                'url'   => 'https://amzn.to/4d62UxW', // ← COLE SEU LINK (+?tag=)
+                'title' => 'A Lógica do Consumo — Martin Lindstrom',
+                'desc'  => 'Por que compramos o que compramos? Neurociência e neuromarketing aplicados ao conteúdo. 2.400 avaliações ★4.6.',
+                'cat'   => 'Neuromarketing',
+                'group' => 'copy',
+            ],
+
+            // ── Grupo: Produtividade & Mentalidade ────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Administração e Negócios, mai/2026
+            'habitos-atomicos' => [
+                'url'   => 'https://amzn.to/4u1HvNt', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Hábitos Atômicos — James Clear',
+                'desc'  => 'O método mais vendido do mundo para criar bons hábitos de uma vez por todas. 27.000 avaliações ★4.8.',
+                'cat'   => 'Produtividade',
+                'group' => 'prod',
+            ],
+            'essencialismo' => [
+                'url'   => 'https://amzn.to/4eZn52S', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Essencialismo — A disciplinada busca por menos',
+                'desc'  => 'Faça menos, mas muito melhor. O sistema definitivo para focar no que importa. 34.000 avaliações ★4.8.',
+                'cat'   => 'Foco & Método',
+                'group' => 'prod',
+            ],
+            'poder-habito' => [
+                'url'   => 'https://amzn.to/42MAiES', // ← COLE SEU LINK (+?tag=)
+                'title' => 'O Poder do Hábito — Charles Duhigg',
+                'desc'  => 'Por que fazemos o que fazemos — e como mudar. Um clássico com 24.000 avaliações ★4.8.',
+                'cat'   => 'Hábitos & Comportamento',
+                'group' => 'prod',
+            ],
+            'mindset' => [
+                'url'   => 'https://amzn.to/4cPQ0Fl', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Mindset — A nova psicologia do sucesso',
+                'desc'  => 'Carol Dweck explica por que a mentalidade de crescimento é o diferencial que separa quem avança dos que estacionam. 37.000 avaliações ★4.7.',
+                'cat'   => 'Mentalidade & Crescimento',
+                'group' => 'prod',
+            ],
+            'nada-pode-ferir' => [
+                'url'   => 'https://amzn.to/3QNZAQs', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Nada Pode Me Ferir — David Goggins',
+                'desc'  => 'A história brutal e inspiradora de como superar limites que você pensava que não existiam. 11.700 avaliações ★4.8.',
+                'cat'   => 'Alta Performance',
+                'group' => 'prod',
+            ],
+            'ego-inimigo' => [
+                'url'   => 'https://amzn.to/4d0aYQx', // ← COLE SEU LINK (+?tag=)
+                'title' => 'O Ego é Seu Inimigo — Ryan Holiday',
+                'desc'  => 'Como o ego sabota quem está começando, quem está crescendo e quem chegou lá. 8.900 avaliações ★4.7.',
+                'cat'   => 'Mentalidade & Estoicismo',
+                'group' => 'prod',
+            ],
+
+            // ── Grupo: TCC & Trabalhos Acadêmicos ─────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Computação, mai/2026
+            'entendendo-algoritmos' => [
+                'url'   => 'https://amzn.to/4tdNxJw', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Entendendo Algoritmos — Guia Ilustrado',
+                'desc'  => '#1 em Computação. O livro de algoritmos mais amado do Brasil. Indispensável para TCC de TI. 6.000 avaliações ★4.8.',
+                'cat'   => 'Algoritmos & TCC',
+                'group' => 'tcc',
+            ],
+            'maos-obra-ml' => [
+                'url'   => 'https://amzn.to/4w9JKQ9', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Mãos à Obra: Machine Learning com Scikit-Learn & TensorFlow',
+                'desc'  => 'O manual prático de ML em português. Do zero ao projeto de TCC com dados reais.',
+                'cat'   => 'Machine Learning',
+                'group' => 'tcc',
+            ],
+            'codigo-limpo' => [
+                'url'   => 'https://amzn.to/4w5ECwJ', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Código Limpo — Robert C. Martin (Uncle Bob)',
+                'desc'  => 'A bíblia da programação profissional. 7.800 avaliações ★4.9. Citado em todo TCC de eng. de software.',
+                'cat'   => 'Engenharia de Software',
+                'group' => 'tcc',
+            ],
+            'intro-sql' => [
+                'url'   => 'https://amzn.to/4n8JQU9', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Introdução à Linguagem SQL — Thomas Nield',
+                'desc'  => 'A abordagem mais acessível para iniciantes que precisam de banco de dados no TCC. 1.900 avaliações ★4.8.',
+                'cat'   => 'Banco de Dados & SQL',
+                'group' => 'tcc',
+            ],
+            'pense-python' => [
+                'url'   => 'https://amzn.to/4ncniCb', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Pense em Python — Allen Downey',
+                'desc'  => 'Do iniciante ao desenvolvedor: o guia mais didático de Python em português para projetos e TCC.',
+                'cat'   => 'Programação & Python',
+                'group' => 'tcc',
+            ],
+
+            // ── Grupo: Finanças Pessoais ───────────────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Finanças Pessoais + Negócios, mai/2026
+            'psicologia-financeira' => [
+                'url'   => 'https://amzn.to/4d6yD1K', // ← COLE SEU LINK (+?tag=)
+                'title' => 'A Psicologia Financeira — Morgan Housel',
+                'desc'  => 'Lições atemporais sobre fortuna, ganância e felicidade. #1 em Finanças, 27.000 avaliações ★4.8.',
+                'cat'   => 'Finanças Pessoais',
+                'group' => 'financa',
+            ],
+            'homem-rico-babilonia' => [
+                'url'   => 'https://amzn.to/3QFHS1D', // ← COLE SEU LINK (+?tag=)
+                'title' => 'O Homem Mais Rico da Babilônia',
+                'desc'  => 'O clássico das finanças pessoais com 48.000 avaliações ★4.9. Por apenas R$19,65. Leitura obrigatória.',
+                'cat'   => 'Finanças & Clássicos',
+                'group' => 'financa',
+            ],
+            'pai-rico' => [
+                'url'   => 'https://amzn.to/4dpxV0U', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Pai Rico, Pai Pobre — Edição de 20 anos',
+                'desc'  => 'O livro que mudou a forma como milhões de pessoas pensam sobre dinheiro. 34.000 avaliações ★4.9.',
+                'cat'   => 'Educação Financeira',
+                'group' => 'financa',
+            ],
+            'arte-gastar' => [
+                'url'   => 'https://amzn.to/4esYfbv', // ← COLE SEU LINK (+?tag=)
+                'title' => 'A Arte de Gastar Dinheiro — Morgan Housel',
+                'desc'  => 'Do autor de A Psicologia Financeira: escolhas simples para uma vida equilibrada. 1.800 avaliações ★4.8.',
+                'cat'   => 'Finanças Pessoais',
+                'group' => 'financa',
+            ],
+            'almanaque-naval' => [
+                'url'   => 'https://amzn.to/4tdNUUq', // ← COLE SEU LINK (+?tag=)
+                'title' => 'O Almanaque de Naval Ravikant',
+                'desc'  => 'Um guia para a riqueza e a felicidade do investidor e filósofo do Vale do Silício. 3.000 avaliações ★4.7.',
+                'cat'   => 'Riqueza & Mentalidade',
+                'group' => 'financa',
+            ],
+
+            // ── Grupo: Carreira & Liderança ────────────────────────────────
+            // Fonte: Mais Vendidos Amazon BR — Carreiras + Negócios, mai/2026
+            'como-fazer-amigos' => [
+                'url'   => 'https://amzn.to/4exZSVz', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Como Fazer Amigos e Influenciar Pessoas — Dale Carnegie',
+                'desc'  => 'O guia de comunicação e relacionamento mais vendido de todos os tempos. 24.000 avaliações ★4.8.',
+                'cat'   => 'Comunicação & Carreira',
+                'group' => 'carreira',
+            ],
+            'negocie-fbi' => [
+                'url'   => 'https://amzn.to/42MrQ8D', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Negocie como se sua Vida Dependesse Disso — Chris Voss',
+                'desc'  => 'Técnicas reais do FBI para negociar qualquer coisa — clientes, salário, parcerias. 5.000 avaliações ★4.8.',
+                'cat'   => 'Negociação & Carreira',
+                'group' => 'carreira',
+            ],
+            'meditacoes-marco' => [
+                'url'   => 'https://amzn.to/4ukKlNa', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Meditações de Marco Aurélio — Edição com postais',
+                'desc'  => 'A filosofia estoica aplicada à vida real e ao trabalho. 10.600 avaliações ★4.8.',
+                'cat'   => 'Estoicismo & Carreira',
+                'group' => 'carreira',
+            ],
+            'roube-artista' => [
+                'url'   => 'https://amzn.to/3QO4ZqQ', // ← COLE SEU LINK (+?tag=) — Kindle
+                'title' => 'Roube como um Artista — Austin Kleon',
+                'desc'  => 'Como criar seu próprio trabalho com base nas influências certas. 25.000 avaliações ★4.7.',
+                'cat'   => 'Criatividade & Carreira',
+                'group' => 'carreira',
+            ],
+            'rapido-devagar' => [
+                'url'   => 'https://amzn.to/4emChqG', // ← COLE SEU LINK (+?tag=)
+                'title' => 'Rápido e Devagar — Daniel Kahneman',
+                'desc'  => 'Como o cérebro toma decisões — e como tomar decisões melhores na carreira e nos negócios. 19.800 avaliações ★4.7.',
+                'cat'   => 'Decisão & Carreira',
+                'group' => 'carreira',
+            ],
+        ] );
+
+        // ── Placement → grupo padrão ─────────────────────────────────────────
+        $placement_groups = [
+            'hero'        => 'ia',
+            'banner-top'  => 'ia',
+            'inline'      => 'copy',
+            'inline-2'    => 'copy',
+            'sidebar'     => 'copy',
+            'sidebar-2'   => 'prod',
+            'final'       => 'prod',
+            'tcc'         => 'tcc',      // uso explícito: redatudo_amazon_ad('tcc')
+            'financa'     => 'financa',  // uso explícito: redatudo_amazon_ad('financa')
+            'carreira'    => 'carreira', // uso explícito: redatudo_amazon_ad('carreira')
+            'default'     => 'ia',
+        ];
+
+        // Produto único forçado (compatibilidade retroativa)
+        if ( isset( $args['product'] ) ) {
+            $key     = $args['product'];
+            $product = isset( $catalog[ $key ] ) ? $catalog[ $key ] : reset( $catalog );
+            $items   = [ $product ];
+        } else {
+            // Grupo a exibir
+            $group = isset( $args['group'] )
+                ? $args['group']
+                : ( $placement_groups[ $placement ] ?? 'ia' );
+
+            $items = array_values( array_filter( $catalog, fn( $p ) => ( $p['group'] ?? '' ) === $group ) );
+            if ( empty( $items ) ) {
+                $items = array_values( $catalog );
+            }
+            // Embaralha para variar os anúncios a cada carregamento
+            shuffle( $items );
+            // Máximo de 2 itens por bloco
+            $items = array_slice( $items, 0, 2 );
+        }
+
+        // ── Render: lista estilo anúncio de texto ────────────────────────────
+        $uid = 'amz-' . esc_attr( $placement ) . '-' . substr( md5( $placement . ( $args['product'] ?? $group ?? 'x' ) ), 0, 6 );
+
+        echo '<div class="rdtd-textad" id="' . $uid . '"'
+            . ' data-ga4="affiliate_impression"'
+            . ' data-ga4-placement="' . esc_attr( $placement ) . '">';
+
+        echo '<div class="rdtd-textad-label">📚 Livros recomendados</div>';
+        echo '<div class="rdtd-textad-list">';
+
+        foreach ( $items as $i => $product ) {
+            $url   = esc_url( $product['url'] );
+            $title = esc_html( $product['title'] );
+            $desc  = esc_html( $product['desc'] );
+            $cat   = esc_html( $product['cat'] );
+            $pkey  = array_search( $product, $catalog ) ?: 'item-' . $i;
+
+            echo '<div class="rdtd-textad-item">';
+            echo '<a href="' . $url . '"'
+                . ' class="rdtd-textad-title"'
+                . ' target="_blank"'
+                . ' rel="noopener sponsored"'
+                . ' data-ga4="affiliate_click"'
+                . ' data-ga4-placement="' . esc_attr( $placement ) . '"'
+                . ' data-ga4-product="' . esc_attr( $pkey ) . '">'
+                . $title . '</a>';
+            echo '<div class="rdtd-textad-meta">'
+                . '<span class="rdtd-textad-domain">amazon.com.br</span>'
+                . ' &middot; '
+                . '<span class="rdtd-textad-cat">' . $cat . '</span>'
+                . '</div>';
+            echo '<div class="rdtd-textad-desc">' . $desc . '</div>';
+            echo '</div>';
+        }
+
+        echo '</div></div>';
+    }
+}
+
 /**
  * Theme functions and definitions.
  */
@@ -58,14 +469,6 @@ add_shortcode( 'countdown', function($attrs, $content = null){
     return $html;
 } );
 
-/* function my_custom_action() { 
-    echo '<p>This is my custom action function</p>';
-};     
-add_action( 'woocommerce_single_product_summary', 'my_custom_action', 15 ); 
-function my_custom_title() { 
-    echo '<p>This is my custom action function</p>';
-};     
-add_action( 'woocommerce_template_single_title', 'my_custom_title', 5 );  */
 
 function starGeneraton($set_star){
   $star .= '';
@@ -454,15 +857,25 @@ add_action( 'woocommerce_created_customer', 'wooc_save_extra_register_fields' );
 add_action(
     'wp_logout',
     function() {
+        $login_app = isset( $_GET['login_app'] ) ? sanitize_text_field( $_GET['login_app'] ) : 'hub';
 
-        wp_redirect( 'https://chat.redatudo.online?logout=1' );
+        $login_url = function_exists( 'wc_get_page_permalink' )
+            ? wc_get_page_permalink( 'myaccount' )
+            : get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
+
+        $redirect_url = add_query_arg(
+            [
+                'login_app' => $login_app,
+                'logout' => 1,
+            ],
+            $login_url
+        );
+
+        wp_redirect( $redirect_url );
         exit;
     }
 );
-function so_266_your_function($user_login, $user) {
-    wp_redirect( 'https://redatudo.online/minha-conta?login_app=chat');
-}
-add_action('wp_login', 'so_266_your_function', 10, 2);
+
 
 // Adicione este código ao seu tema functions.php ou plugin personalizado
 
@@ -1122,7 +1535,7 @@ add_action('init', function() {
       wp_set_auth_cookie($user_id);
 
       // Captura o valor de login_app da query string
-      $login_app = isset($_GET['login_app']) ? sanitize_text_field($_GET['login_app']) : 'chat';
+    $login_app = isset($_GET['login_app']) ? sanitize_text_field($_GET['login_app']) : 'hub';
       $redirect_url = 'https://redatudo.online/minha-conta?login_app=' . urlencode($login_app);
 
       wp_redirect($redirect_url);
@@ -1137,18 +1550,26 @@ add_action('init', function() {
  */
 
 function redatudo_enqueue_rebranding_assets() {
+    // Sistema de Design Global - Redatudo 2.0
+    wp_enqueue_style(
+        'redatudo-global',
+        get_template_directory_uri() . '/assets/css/redatudo-global.css',
+        array(),
+        '2.0.1'
+    );
+    
     // CSS Variables do sistema de design
     wp_enqueue_style(
         'redatudo-variables',
         get_template_directory_uri() . '/assets/css/variables.css',
-        array(),
+        array('redatudo-global'),
         '2.0.0'
     );
     
-    // Google Fonts - Outfit e Inter
+    // Google Fonts - Outfit e Inter (já incluído no global, mas mantendo por compatibilidade)
     wp_enqueue_style(
         'redatudo-fonts',
-        'https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Inter:wght@400;500;600&display=swap',
+        'https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600&display=swap',
         array(),
         null
     );
@@ -1157,9 +1578,19 @@ function redatudo_enqueue_rebranding_assets() {
     wp_enqueue_style(
         'redatudo-components',
         get_template_directory_uri() . '/assets/css/components.css',
-        array('redatudo-variables'),
+        array('redatudo-global', 'redatudo-variables'),
         '2.0.0'
     );
+    
+    // WooCommerce Styles - Apenas em páginas WooCommerce
+    if (class_exists('WooCommerce')) {
+        wp_enqueue_style(
+            'redatudo-woocommerce',
+            get_template_directory_uri() . '/assets/css/woocommerce-redatudo.css',
+            array('redatudo-global'),
+            '2.0.1'
+        );
+    }
     
     // JavaScript para interações
     wp_enqueue_script(
@@ -1387,6 +1818,42 @@ function redatudo_tools_grid_shortcode($atts, $content = null) {
 }
 add_shortcode('tools_grid', 'redatudo_tools_grid_shortcode');
 
+
+// === Altera o background dos boxes de métodos de pagamento ===
+add_action( 'wp_footer', function() {
+    if ( is_checkout() ) : ?>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Função que muda o background dos boxes de pagamento
+          function atualizarBackgroundPagamento() {
+            const boxes = document.querySelectorAll(
+              '#add_payment_method #payment div.payment_box, .woocommerce-cart #payment div.payment_box, .woocommerce-checkout #payment div.payment_box'
+            );
+
+            boxes.forEach(box => {
+              box.style.backgroundColor = 'black';
+              box.style.color = 'white'; // opcional, melhora contraste do texto
+              box.style.transition = 'background-color 0.5s ease';
+            });
+          }
+
+          // Executa 2 segundos após o carregamento inicial
+          setTimeout(atualizarBackgroundPagamento, 2000);
+
+          // Observa mudanças no checkout (ex: troca de método)
+          const checkoutContainer = document.querySelector('form.checkout, #payment');
+          if (checkoutContainer) {
+            const observer = new MutationObserver(() => {
+              setTimeout(atualizarBackgroundPagamento, 2000);
+            });
+            observer.observe(checkoutContainer, { childList: true, subtree: true });
+          }
+        });
+        </script>
+    <?php
+    endif;
+});
+
 /**
  * ========================================
  * HOOKS E FILTROS EXISTENTES
@@ -1401,3 +1868,328 @@ add_shortcode( 'product_reviews', 'rd_reviews_products' );
 add_shortcode('woo_rd', 'woo_rd_template');
 add_shortcode( 'nuvem_tags', 'nuvemTagsShortcode');
 add_action('after_setup_theme', 'bs_after_setup_theme');
+
+/**
+ * ========================================
+ * SOLUÇÃO: CHECKOUT DIRETO COM ?add_to_cart
+ * ========================================
+ * 
+ * Processa o parâmetro ?add_to_cart=xxx no checkout.
+ * Usuários vindos de apps externos (chat.redatudo.online, zap-agent.redatudo.online)
+ * são direcionados DIRETAMENTE para /checkout/?add_to_cart=xxx
+ * sem passar por páginas de produto ou carrinho.
+ * 
+ * CASOS TRATADOS:
+ * 1. Usuário já tem ESTA assinatura específica ativa → redireciona para minha conta
+ * 2. Carrinho tem outros produtos → limpa antes de adicionar subscription
+ * 3. Produto já no carrinho → prossegue normalmente
+ */
+// add_action( 'wp', 'redatudo_checkout_add_to_cart_handler', 0 );
+function redatudo_checkout_add_to_cart_handler() {
+    // Só processa se estiver na página de checkout E tiver o parâmetro add_to_cart
+    if ( ! is_checkout() || ! isset( $_GET['add_to_cart'] ) ) {
+        return;
+    }
+    
+    $product_id = absint( $_GET['add_to_cart'] );
+    $product = wc_get_product( $product_id );
+    
+    // Valida se o produto existe
+    if ( ! $product_id || ! $product ) {
+        return;
+    }
+    
+    // Verifica se é subscription
+    $is_subscription = function_exists( 'wcs_is_subscription' ) && wcs_is_subscription( $product );
+    
+    // CASO 1: Se o usuário JÁ TEM ESTA assinatura específica ativa, redireciona para minha conta
+    if ( $is_subscription && is_user_logged_in() ) {
+        $product_to_check = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product_id;
+        if ( redatudo_user_has_subscription_for_product( $product_to_check ) || redatudo_user_has_subscription_for_product( $product_id ) ) {
+            wc_add_notice( 'Você já possui esta assinatura ativa. Gerencie sua assinatura em Minha Conta.', 'notice' );
+            $redirect_url = $product->is_type( 'variation' )
+                ? get_permalink( $product->get_parent_id() )
+                : get_permalink( $product->get_id() );
+            wp_redirect( $redirect_url );
+            exit;
+        }
+    }
+    
+    // CASO 2: Se for subscription e o carrinho NÃO está vazio, limpa antes (subscriptions não podem ter outros produtos)
+    if ( $is_subscription && ! WC()->cart->is_empty() ) {
+        WC()->cart->empty_cart();
+    }
+    
+    // Verifica se o produto específico já está no carrinho
+    $cart_item_key = WC()->cart->find_product_in_cart( WC()->cart->generate_cart_id( $product_id ) );
+    
+    if ( $cart_item_key ) {
+        // Produto já está no carrinho, redireciona sem parâmetros
+        $checkout_url = remove_query_arg( array( 'add_to_cart', 'quantity' ), wc_get_checkout_url() );
+        wp_safe_redirect( $checkout_url );
+        exit;
+    }
+    
+    // Adiciona o produto ao carrinho
+    $quantity = isset( $_GET['quantity'] ) ? absint( $_GET['quantity'] ) : 1;
+    $added = WC()->cart->add_to_cart( $product_id, $quantity );
+    
+    if ( $added ) {
+        // Remove o parâmetro da URL para evitar re-adição ao recarregar
+        $checkout_url = remove_query_arg( array( 'add_to_cart', 'quantity' ), wc_get_checkout_url() );
+        wp_safe_redirect( $checkout_url );
+        exit;
+    } else {
+        // Se falhou ao adicionar (por alguma validação do WooCommerce), redireciona para conta
+        wc_add_notice( 'Não foi possível adicionar este produto ao carrinho. Verifique sua conta.', 'error' );
+        wp_redirect( wc_get_page_permalink( 'myaccount' ) );
+        exit;
+    }
+}
+
+/**
+ * TESTE ULTIMO: Sempre redirecionar logados para página do produto PAI
+ * Com parâmetro de query para mostrar modal de planos
+ */
+//add_action( 'wp', 'redatudo_last_test_redirect_logged_users', 1 );
+function redatudo_last_test_redirect_logged_users() {
+    if ( ! is_checkout() || ! isset( $_GET['add_to_cart'] ) ) {
+        return;
+    }
+
+    if ( ! is_user_logged_in() ) {
+        return; // Só testar se logado
+    }
+
+    $product_id = absint( $_GET['add_to_cart'] );
+    $product = wc_get_product( $product_id );
+
+    // Se for variação, redirecionar para produto pai
+    if ( $product && $product->is_type( 'variation' ) ) {
+        $parent_url = get_permalink( $product->get_parent_id() );
+        wp_redirect( $parent_url );
+        exit;
+    }
+
+    wp_redirect( wc_get_page_permalink( 'myaccount' ) );
+    exit;
+}
+
+/**
+ * Permite subscriptions serem adicionadas ao carrinho mesmo com restrições
+ */
+add_filter( 'woocommerce_add_to_cart_validation', 'redatudo_force_subscription_add_to_cart', 999, 3 );
+function redatudo_force_subscription_add_to_cart( $passed, $product_id, $quantity ) {
+    $product = wc_get_product( $product_id );
+
+    // Se for subscription e vier do parâmetro add_to_cart no checkout, força permissão
+    if ( $product && function_exists( 'wcs_is_subscription' ) && wcs_is_subscription( $product ) ) {
+        if ( is_checkout() && isset( $_GET['add_to_cart'] ) ) {
+            return true;
+        }
+    }
+
+    return $passed;
+}
+
+/**
+ * Verifica se a variação no carrinho corresponde à assinatura ativa do usuário
+ *
+ * @param bool $debug Se true, exibe debug info (apenas para desenvolvimento)
+ * @return array Retorna array com 'match' (bool), 'checkout_variation', 'active_variation', 'is_same'
+ */
+function redatudo_compare_checkout_subscription($debug = false) {
+    // Padrão de retorno
+    $result = array(
+        'match' => false,
+        'checkout_variation' => null,
+        'active_variation' => null,
+        'is_same' => false
+    );
+
+    // Só executa se logado
+    if (!is_user_logged_in()) {
+        return $result;
+    }
+
+    // PEGAR A VARIAÇÃO DO PRODUTO NO CARRINHO
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if (isset($cart_item['variation_id']) && $cart_item['variation_id'] > 0) {
+            $result['checkout_variation'] = $cart_item['variation_id'];
+            break; // Pega só a primeira variação encontrada
+        }
+    }
+
+    // PEGAR ASSINATURA ATIVA DO USUÁRIO
+    $active_sub_ids = wcs_get_users_subscriptions(get_current_user_id());
+    foreach ($active_sub_ids as $sub) {
+        if ($sub->has_status('active')) {
+            foreach ($sub->get_items() as $item) {
+                $result['active_variation'] = $item->get_variation_id();
+                break; // Pega a primeira inscrição ativa encontrada
+            }
+        }
+    }
+
+    // COMPARAR ASSINATURA ATUAL vs CHECKOUT
+    $result['is_same'] = (
+        $result['checkout_variation'] &&
+        $result['active_variation'] &&
+        $result['checkout_variation'] == $result['active_variation']
+    );
+
+    $result['match'] = $result['is_same'];
+
+    // DEBUG OPCIONAL (só se solicitado)
+    if ($debug) {
+        echo "<div style='background:#000;color:#00ffd0;padding:10px;border:1px solid #7f00ff;margin:10px 0;'>";
+        echo "<strong>DEBUG - Redatudo Checkout Subscription Check:</strong><br>";
+        echo "Variação no checkout: " . $result['checkout_variation'] . "<br>";
+        echo "Variação da assinatura ativa: " . $result['active_variation'] . "<br>";
+        echo "É a mesma? " . ($result['is_same'] ? 'Sim' : 'Não');
+        echo "</div>";
+    }
+
+    return $result;
+}
+
+/**
+ * Hook para interceptar adição ao carrinho de assinaturas já ativas
+ */
+add_filter('woocommerce_add_to_cart_validation', 'redatudo_prevent_duplicate_subscription_cart', 10, 3);
+function redatudo_prevent_duplicate_subscription_cart($passed, $product_id, $quantity) {
+    if (!is_user_logged_in()) {
+        return $passed;
+    }
+
+    $product = wc_get_product($product_id);
+    if (!$product || !function_exists('wcs_is_subscription') || !wcs_is_subscription($product)) {
+        return $passed;
+    }
+
+    // PERMITIR TROCA se parâmetros de switch estiverem presentes
+    if (isset($_GET['switch-subscription'])) {
+        return $passed; // Permite adicionar
+    }
+
+    // Se estiver tentando adicionar uma variação, verificar se já tem assinatura ativa
+    if ($product->is_type('variation')) {
+        $parent_id = $product->get_parent_id();
+        if (redatudo_user_has_subscription_for_product($parent_id) || redatudo_user_has_subscription_for_product($product_id)) {
+            // Não mostra notificação - redirecionamento implícito
+            return false;
+        }
+    }
+
+    return $passed;
+}
+
+/**
+ * Hook para redirecionar usuários do checkout quando tentam acessar com assinatura já ativa
+ */
+add_action('woocommerce_before_checkout_form', 'redatudo_checkout_subscription_redirect', 1);
+function redatudo_checkout_subscription_redirect() {
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    $subscription_check = redatudo_compare_checkout_subscription(false);
+
+    if ($subscription_check['match']) {
+        // Tentar encontrar o produto para redirecionar
+        $product_id = null;
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (isset($cart_item['variation_id']) && $cart_item['variation_id'] > 0) {
+                $product_id = $cart_item['variation_id'];
+                break;
+            } elseif (isset($cart_item['product_id'])) {
+                $product_id = $cart_item['product_id'];
+                break;
+            }
+        }
+
+        if ($product_id) {
+            $product = wc_get_product($product_id);
+            if ($product && $product->is_type('variation')) {
+                $redirect_url = get_permalink($product->get_parent_id());
+            } else {
+                $redirect_url = get_permalink($product_id);
+            }
+
+            if ($redirect_url) {
+                wp_redirect($redirect_url);
+                exit;
+            }
+        }
+
+        // Fallback para minha conta
+        wp_redirect(wc_get_page_permalink('myaccount'));
+        exit;
+    }
+}
+
+/**
+ * Redireciona página de carrinho vazio diretamente para minha conta
+ * Evita que usuários vejam a "página de carrinho feia e vazia"
+ */
+add_action( 'template_redirect', 'redatudo_redirect_empty_cart', 10 );
+function redatudo_redirect_empty_cart() {
+    if ( is_cart() && WC()->cart->is_empty() && ! isset( $_GET['emptied'] ) ) {
+        wp_redirect( wc_get_page_permalink( 'myaccount' ) );
+        exit;
+    }
+}
+
+
+// Força o total inicial a ser igual ao total recorrente
+add_action('woocommerce_cart_calculate_fees', function($cart) {
+    if (is_admin() && !defined('DOING_AJAX')) return;
+    
+    foreach ($cart->get_cart() as $cart_item) {
+        if (isset($cart_item['subscription_switch'])) {
+            // Adiciona uma taxa com o valor recorrente
+            if (!empty($cart->recurring_carts)) {
+                foreach ($cart->recurring_carts as $recurring_cart) {
+                    $recurring_total = $recurring_cart->get_subtotal();
+                    if ($recurring_total > 0 && $cart->get_subtotal() == 0) {
+                        $cart->add_fee('Pagamento do novo plano', $recurring_total);
+                    }
+                }
+            }
+        }
+    }
+}, 100);
+
+// =============================================
+// TRACKING: user_register → n8n event bus
+// =============================================
+add_action('user_register', function($user_id) {
+    $user = get_userdata($user_id);
+    if (!$user) return;
+    wp_remote_post('https://n8n.redatudo.online/webhook/rdtd-events', [
+        'body' => wp_json_encode([
+            'event'       => 'user_registered',
+            'wp_user_id'  => $user_id,
+            'email'       => $user->user_email,
+            'name'        => $user->display_name,
+            'source'      => 'wordpress',
+            'timestamp'   => gmdate('c'),
+            'properties'  => [
+                'referrer' => isset($_SERVER['HTTP_REFERER']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER'])) : '',
+            ],
+        ]),
+        'headers'  => ['Content-Type' => 'application/json'],
+        'blocking' => false,
+        'timeout'  => 1,
+    ]);
+}, 10, 1);
+
+// =============================================
+// TRACKING: GA4 user_id for logged-in users
+// =============================================
+add_action('wp_head', function() {
+    if (is_user_logged_in()) {
+        $user_id = get_current_user_id();
+        echo '<script>if(typeof gtag!=="undefined"){gtag("set",{"user_id":' . intval($user_id) . '});}window._rdtd_uid=' . intval($user_id) . ';</script>' . "\n";
+    }
+}, 100);

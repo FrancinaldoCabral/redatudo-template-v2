@@ -265,4 +265,43 @@
         e.target.classList.remove('keyboard-focus');
     });
 
+    // ── Table of Contents Generator ───────────────────────────────────────────
+    (function initTOC() {
+        var content = document.getElementById('single-content');
+        var tocList    = document.getElementById('toc-list');
+        var tocMobile  = document.getElementById('toc-mobile');
+
+        if (!content || (!tocList && !tocMobile)) return;
+
+        var headings = content.querySelectorAll('h2');
+        if (headings.length < 2) return;
+
+        var items = '';
+        headings.forEach(function(h, i) {
+            var id = h.id || ('toc-section-' + i);
+            h.id = id;
+            items += '<li><a href="#' + id + '">' + h.textContent + '</a></li>';
+        });
+
+        var list = '<ul>' + items + '</ul>';
+        if (tocList)   { tocList.innerHTML   = list; }
+        if (tocMobile) { tocMobile.innerHTML = list; }
+
+        // Highlight active heading on scroll
+        var allIds = Array.from(headings).map(function(h) { return h.id; });
+        document.addEventListener('scroll', function() {
+            var scrollY = window.scrollY || window.pageYOffset;
+            var active  = allIds[0];
+            allIds.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && el.getBoundingClientRect().top + scrollY <= scrollY + 120) {
+                    active = id;
+                }
+            });
+            document.querySelectorAll('#toc-list a, #toc-mobile a').forEach(function(a) {
+                a.classList.toggle('toc-active', a.getAttribute('href') === '#' + active);
+            });
+        }, { passive: true });
+    })();
+
 })(jQuery);

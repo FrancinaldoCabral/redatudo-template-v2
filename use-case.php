@@ -50,16 +50,16 @@ $model = $args['data'];
 <p class="mt-3">
   <?php
     if(is_user_logged_in(  )){
-      echo '<a href="https://app.redatudo.online">Acesse a plataforma completa agora.</a>';
+      echo '<a href="' . esc_url(redatudo_get_app_url('hub')) . '">Acesse a plataforma completa agora.</a>';
     }else{
-      echo '<a href="https://redatudo.online/minha-conta">Registre-se ou Entre.</a>';
+      echo '<a href="' . esc_url(redatudo_get_app_url('hub')) . '">Registre-se ou Entre.</a>';
     }
   ?>
 </p>
 </form>
 <div id="editor" style="height: 375px;">
   <p>Crie conteúdo incrível agora!</p>
-  <p>Isso é só uma palhinha. Teste gratuitamente todo o poder de <a href="https://app.redatudo.online?token=<?php echo token_generate(); ?>">REDATUDO</a></p>
+  <p>Isso é só uma palhinha. Teste gratuitamente todo o poder de <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>">REDATUDO</a></p>
   <p>Ainda não tem uma conta? <a href="https://redatudo.online/minha-conta">Assine grátis.</a></p>
   <p>Ou assine uma conta prêmium. <a href="https://redatudo.online/#assine-agora">Assine uma conta premium.</a></p>
   <p><br></p>

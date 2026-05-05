@@ -1,0 +1,82 @@
+# ============================================================================
+# RedaTudo — Proteção .htaccess (Phase 4)
+# ============================================================================
+#
+# INSTRUÇÃO DE USO:
+#   Cole as regras abaixo NO INÍCIO do arquivo .htaccess do servidor,
+#   ANTES da seção "# BEGIN WordPress".
+#
+# ATENÇÃO: Não edite o arquivo enquanto o site está recebendo tráfego intenso.
+#   Faça o backup do .htaccess atual antes de aplicar.
+#   Teste em horário de baixo tráfego.
+#
+# ============================================================================
+
+# --- Bloqueia acesso ao XML-RPC (alvo frequente de ataques de força bruta) ---
+<Files xmlrpc.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# --- Bloqueia User-Agents de bots / scrapers maliciosos ----------------------
+#
+# NÃO bloqueados intencionalmente (bots legítimos e necessários):
+#   Googlebot, Bingbot, Slurp (Yahoo), DuckDuckBot, Baiduspider,
+#   Twitterbot, facebookexternalhit, LinkedInBot, WhatsApp, Applebot
+#
+# BLOQUEADOS:
+#   python-requests, python-urllib, aiohttp, httpx  — scrapers genéricos
+#   Scrapy                                          — framework de scraping
+#   curl (user-agent puro, sem contexto)            — scans automatizados
+#   wget                                            — downloads automatizados
+#   MJ12bot                                         — crawler Majestic SEO
+#   DotBot                                          — crawler Moz
+#   SemrushBot                                      — crawler Semrush
+#   AhrefsBot                                       — crawler Ahrefs
+#   PetalBot                                        — crawler Huawei
+#   Bytespider                                      — crawler ByteDance/TikTok
+#   ClaudeBot                                       — crawler Anthropic AI
+#   GPTBot                                          — crawler OpenAI
+#   CCBot                                           — Common Crawl (alimenta LLMs)
+#   anthropic-ai                                    — crawler Anthropic alternativo
+#   cohere-ai                                       — crawler Cohere AI
+#   ia_archiver                                     — Wayback Machine agressivo
+#   magpie-crawler                                  — crawler Brandwatch
+#   omgilibot                                       — crawler análise de dados
+#   proximic                                        — crawler Comscore
+#   YandexBot                                       — crawler Yandex (RU)
+#   BLEXBot                                         — crawler WebMeUp
+#   Exabot                                          — crawler francês
+#   seznambot                                       — crawler tcheco Seznam
+#
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Bloqueia por User-Agent (case-insensitive)
+    RewriteCond %{HTTP_USER_AGENT} (python-requests|python-urllib|aiohttp|httpx) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (Scrapy|scrapy) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^curl\/ [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^wget\/ [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (MJ12bot|DotBot|SemrushBot|AhrefsBot|PetalBot) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (Bytespider|ByteDance) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (ClaudeBot|GPTBot|CCBot|anthropic-ai|cohere-ai) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (ia_archiver|magpie-crawler|omgilibot|proximic) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (YandexBot|BLEXBot|Exabot|seznambot) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# --- Bloqueia requisições sem User-Agent (scans de vulnerabilidade) ----------
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} ^$
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# --- Bloqueia acesso direto a arquivos sensíveis do WordPress ----------------
+<FilesMatch "^(wp-config\.php|readme\.html|license\.txt|wp-cli\.yml|\.env)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# ============================================================================
+# FIM DAS REGRAS REDATUDO — O CONTEÚDO ORIGINAL DO .htaccess COMEÇA ABAIXO
+# ============================================================================

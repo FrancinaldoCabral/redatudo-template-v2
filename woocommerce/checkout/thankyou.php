@@ -142,6 +142,27 @@ body.redatudo-finish-block { overflow: hidden !important; }
   <div class="redatudo-finish-inner">
     <img src="https://redatudo.online/wp-content/uploads/2025/04/logotipo-redatudo-sem-fundo.png" alt="Concluído Redatudo" />
     <div class="reda-finish-msg">Pedido confirmado!</div>
+<!--     <div style="margin-top: 1.5em; text-align: center; padding: 1em; background: rgba(0,255,208,0.1); border-radius: 12px; border: 1px solid rgba(0,255,208,0.2);">
+      <h4 style="color: #00ffd0; font-size: 1.1em; margin-bottom: 1em; font-family: 'Orbitron', Arial, sans-serif; font-weight: 600;">Ferramentas Disponíveis:</h4>
+      <ul style="list-style: none; padding: 0; color: #b8e6ff; font-size: 0.9em; line-height: 1.6; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5em;">
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('ebook')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📚 Gerador de Ebook</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💡 Gerador de Títulos</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📸 Legendas Instagram</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🎓 Gerador de Introdução</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">✍️ Humanizador de Texto</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🛍️ ShopCopy</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📋 Gerador de Temas TCC</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🔄 Reformulador</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📝 Gerador Copy AIDA</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">✅ Corretor ABNT</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">#️⃣ Gerador de Hashtags</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🏁 Gerador de Conclusão</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💬 Frases Motivacionais</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📖 Nomes de Livros</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">@ Gerador de Username</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💭 Gerador de Ideias</a></li>
+      </ul>
+    </div> -->
   </div>
 </div>
 <audio id="reda-success-audio" preload="auto" style="display:none">
@@ -169,10 +190,10 @@ body.redatudo-finish-block { overflow: hidden !important; }
 
     <div class="redathank-msg">
       Sua compra foi processada com sucesso.<br>
-      <strong>Agora é só acessar o seu Dashboard de IA Redatudo e começar a criar conteúdos!</strong>
+      <strong>Agora é só acessar o seu Dashboard Hub Redatudo e começar a criar conteúdos!</strong>
     </div>
 
-    <a href="https://chat.redatudo.online/?token=<?php echo token_generate();?>" class="redathank-btn" target="_blank" rel="noopener">
+    <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="redathank-btn" target="_blank" rel="noopener">
       Acessar Dashboard IA
     </a>
 
@@ -186,6 +207,28 @@ body.redatudo-finish-block { overflow: hidden !important; }
       <?php if ( $order->get_payment_method_title() ) : ?>
       <div><?php esc_html_e( 'Pagamento:', 'woocommerce' ); ?> <strong><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></strong></div>
       <?php endif; ?>
+    </div>
+
+    <div style="margin-top: 2em; padding: 1.5em; background: rgba(0,255,208,0.15); border-radius: 16px; text-align: left; border: 1px solid rgba(0,255,208,0.3);">
+      <h4 style="color: #00ffd0; margin-bottom: 1em; font-size: 1.1em; font-weight: 600;">Ferramentas Disponíveis no Seu Dashboard:</h4>
+      <ul style="list-style: none; padding: 0; color: #b8e6ff; font-size: 0.95em; line-height: 1.8;">
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('ebook')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📚 Gerador de Ebook</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💡 Gerador de Títulos</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📸 Legendas Instagram</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🎓 Gerador de Introdução</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">✍️ Humanizador de Texto</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🛍️ ShopCopy</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📋 Gerador de Temas TCC</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🔄 Reformulador</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📝 Gerador Copy AIDA</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">✅ Corretor ABNT</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">#️⃣ Gerador de Hashtags</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">🏁 Gerador de Conclusão</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💬 Frases Motivacionais</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">📖 Nomes de Livros</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">@ Gerador de Username</a></li>
+        <li><a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" style="color: #00bfff; text-decoration: none; transition: color 0.3s;" target="_blank">💭 Gerador de Ideias</a></li>
+      </ul>
     </div>
 
     <?php // do_action( 'woocommerce_thankyou_' . $order->get_payment_method(), $order->get_id() ); ?>

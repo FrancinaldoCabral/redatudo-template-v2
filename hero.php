@@ -2,14 +2,7 @@
   <div class="row align-items-center justify-content-center">
     <div class="col-12 col-md-8 col-lg-8 p-4 ml-4">
       <p class="d-block d-md-none d-lg-none mt-4 pt-4">
-          <ins class="adsbygoogle"
-                  style="display:block"
-                  data-ad-format="autorelaxed"
-                  data-ad-client="ca-pub-9848635946946970"
-                  data-ad-slot="5751994556"></ins>
-          <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>                        
+          <?php redatudo_amazon_ad('hero'); ?>
       </p>
     </div>
     <div class="col-12 col-md-8 col-lg-8 p-4 ml-4">
@@ -29,7 +22,7 @@
             ?>
         </p>
         <a class="btn btn-primary btn-lg animate__animated animate__fadeInUp mt-4" 
-        href="https://redatudo.online/minha-conta?login_app=chat" 
+        href="https://redatudo.online/minha-conta?login_app=hub" 
         role="button">Crie Conteúdo do Zero com IA</a>
     </div>
     <div class="col-12 col-md-4 col-lg-4">

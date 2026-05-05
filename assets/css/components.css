@@ -652,3 +652,175 @@
     gap: var(--spacing-4);
   }
 }
+
+/* ========================================
+   AMAZON AFFILIATE — CARDS DE LIVROS
+   ======================================== */
+
+.rdtd-textad {
+  border: 1px solid rgba(255, 153, 0, 0.18);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1.75rem 0;
+  background: rgba(255, 153, 0, 0.04);
+}
+
+.rdtd-textad-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: rgba(251, 191, 36, 0.55) !important;
+  margin-bottom: 0.75rem !important;
+  text-align: left !important;
+}
+
+/* sem ::before — emoji já está no PHP */
+
+.rdtd-textad-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.rdtd-textad-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  padding: 0.85rem 0 !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  list-style: none !important;
+  text-align: left !important;
+}
+
+.rdtd-textad-item:first-child {
+  padding-top: 0 !important;
+}
+
+.rdtd-textad-item:last-child {
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+.rdtd-textad-title {
+  font-size: 0.93rem !important;
+  font-weight: 600 !important;
+  color: #60a5fa !important;
+  text-decoration: none !important;
+  line-height: 1.45 !important;
+  transition: color 0.15s !important;
+  display: block !important;
+  text-align: left !important;
+  margin-bottom: 0.3rem !important;
+}
+
+.rdtd-textad-title:hover {
+  color: #93c5fd !important;
+  text-decoration: underline !important;
+}
+
+.rdtd-textad-meta {
+  font-size: 0.7rem !important;
+  color: rgba(156, 163, 175, 0.6) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  padding: 0 !important;
+  margin: 0 0 0.35rem 0 !important;
+  text-align: left !important;
+}
+
+.rdtd-textad-domain {
+  color: rgba(74, 222, 128, 0.75) !important;
+}
+
+.rdtd-textad-cat {
+  color: rgba(156, 163, 175, 0.6) !important;
+}
+
+.rdtd-textad-desc {
+  font-size: 0.79rem !important;
+  color: #9CA3AF !important;
+  line-height: 1.55 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: left !important;
+  display: block !important;
+}
+
+/* ── Mantém classes antigas para não quebrar nada que as use no HTML ──────── */
+.rdtd-affiliate-ad       { display: none; }
+.rdtd-affiliate-badge,
+.rdtd-affiliate-content,
+.rdtd-affiliate-icon,
+.rdtd-affiliate-text,
+.rdtd-affiliate-cat,
+.rdtd-affiliate-title,
+.rdtd-affiliate-desc,
+.rdtd-affiliate-btn      { display: none; }
+
+/* ── Inline Article CTA ─────────────────────────────────────────────────────── */
+.rdtd-inline-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(124,58,237,0.08));
+  border: 1px solid rgba(16,185,129,0.35);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem 0;
+}
+
+.rdtd-inline-cta-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.rdtd-inline-cta-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.rdtd-inline-cta-title {
+  color: #F9FAFB;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: block;
+}
+
+.rdtd-inline-cta-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff !important;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  text-decoration: none !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  align-self: flex-start;
+  transition: opacity 0.2s;
+}
+
+.rdtd-inline-cta-btn:hover {
+  opacity: 0.85;
+  color: #fff !important;
+}
+
+@media (max-width: 480px) {
+  .rdtd-inline-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}

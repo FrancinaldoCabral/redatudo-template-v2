@@ -6,6 +6,8 @@ do_action( 'woocommerce_before_checkout_form', $checkout );
 if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_required() && ! is_user_logged_in() ) {
   echo '<div class="alert alert-warning text-center" style="font-family:Orbitron,Arial; color:#00ffd0;background:#181733;">' . esc_html( apply_filters( 'woocommerce_checkout_must_be_logged_in_message', __( 'Você precisa estar logado para finalizar a compra.', 'woocommerce' ) ) ) . '</div>'; return;
 }
+
+
 ?>
 
 <style>
@@ -87,6 +89,12 @@ body.woocommerce-checkout { background: #0d0d13; }
   border-color: #00ffd0 !important; background: #101022 !important; color:#00ffd0 !important;
   box-shadow: 0 2px 13px #00ffd023;
 }
+
+/* NÃO aplica verde nos labels do Stripe */
+#payment .woocommerce-billing-fields label,
+#payment .redatudo-billing-fields label {
+  color: #00ffd0 !important;
+}
 #order_review_heading { display:none; }
 #order_review {
   padding:0; background:none; border:none; box-shadow:none;
@@ -105,6 +113,25 @@ body.woocommerce-checkout { background: #0d0d13; }
   background: linear-gradient(92deg, #00bfff 60%, #7f00ff 100%);
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 8px 22px #00ffd084;
+}
+
+/* Sobrescreve cores do Stripe para melhor legibilidade - MAIS ESPECÍFICO */
+.p-PaymentElement .p-FieldLabel,
+.p-PaymentElement label.p-FieldLabel,
+.p-PaymentElement .Label,
+.p-Field .p-FieldLabel,
+#payment .p-PaymentElement label,
+#order_review .p-FieldLabel,
+.woocommerce-checkout-payment .p-FieldLabel {
+  color: #2D3748 !important;
+  font-weight: 600 !important;
+}
+.p-PaymentElement .p-Input-input,
+.p-PaymentElement input,
+.p-PaymentElement .p-Select-select,
+.p-PaymentElement select,
+#payment .p-Input-input {
+  color: #1A202C !important;
 }
 .checkout-footer-trust {
   display: flex; align-items: center; gap: .7em;
@@ -252,5 +279,37 @@ jQuery(function($){
     $('#redatudo-global-loader').hide();
     $('body').removeClass('redatudo-loading');
   });
+
+  // Força cor dos labels do Stripe para cinza escuro
+  function fixStripeColors() {
+    // Labels do Stripe
+    $('.p-FieldLabel, .p-PaymentElement label, .p-Field label').each(function(){
+      $(this).css({
+        'color': '#2D3748',
+        'font-weight': '600'
+      });
+    });
+    // Inputs do Stripe
+    $('.p-Input-input, .p-PaymentElement input, .p-Select-select').each(function(){
+      $(this).css('color', '#1A202C');
+    });
+  }
+
+  // Executa quando a página carregar
+  setTimeout(fixStripeColors, 500);
+  setTimeout(fixStripeColors, 1000);
+  setTimeout(fixStripeColors, 2000);
+
+  // Observa mudanças no DOM para quando o Stripe carregar
+  var observer = new MutationObserver(function(mutations) {
+    fixStripeColors();
+  });
+  
+  if (document.querySelector('#payment')) {
+    observer.observe(document.querySelector('#payment'), {
+      childList: true,
+      subtree: true
+    });
+  }
 });
 </script>

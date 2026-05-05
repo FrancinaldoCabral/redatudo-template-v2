@@ -1,0 +1,446 @@
+/**
+ * WooCommerce Redatudo 2.0 - Estilos Globais
+ * Aplicado em todas as páginas WooCommerce
+ */
+
+/* ========================================
+   CORES E BACKGROUNDS GLOBAIS
+   ======================================== */
+.woocommerce,
+.woocommerce-page {
+    background: #0F0F1A;
+    color: #D1D5DB;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ========================================
+   TÍTULOS E TEXTOS
+   ======================================== */
+.woocommerce h1,
+.woocommerce h2,
+.woocommerce h3,
+.woocommerce .product_title {
+    font-family: 'Outfit', sans-serif !important;
+    color: #FFFFFF;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.woocommerce .page-title,
+.woocommerce-page .page-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #FFFFFF;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* ========================================
+   CARDS E CONTAINERS
+   ======================================== */
+.woocommerce .cart-collaterals,
+.woocommerce-checkout,
+.woocommerce form,
+.woocommerce .woocommerce-MyAccount-content,
+.woocommerce-cart .cart_totals {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+/* ========================================
+   BOTÕES PRINCIPAIS
+   ======================================== */
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce #respond input#submit.alt,
+.woocommerce .checkout-button,
+.woocommerce-Button {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    padding: 0.875rem 2rem !important;
+    border-radius: 12px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+    transition: all 0.3s !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce .checkout-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Botões secundários */
+.woocommerce a.button.secondary,
+.woocommerce button.button.secondary {
+    background: transparent !important;
+    border: 2px solid #7C3AED !important;
+    color: #7C3AED !important;
+}
+
+.woocommerce a.button.secondary:hover {
+    background: #7C3AED !important;
+    color: #FFFFFF !important;
+}
+
+/* ========================================
+   CAMPOS DE FORMULÁRIO
+   ======================================== */
+.woocommerce input[type="text"],
+.woocommerce input[type="email"],
+.woocommerce input[type="tel"],
+.woocommerce input[type="password"],
+.woocommerce input[type="number"],
+.woocommerce textarea,
+.woocommerce select,
+.woocommerce-Input {
+    background: #161622 !important;
+    border: 2px solid #374151 !important;
+    color: #FFFFFF !important;
+    padding: 0.875rem 1rem !important;
+    border-radius: 10px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+}
+
+.woocommerce input:focus,
+.woocommerce textarea:focus,
+.woocommerce select:focus {
+    border-color: #7C3AED !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
+}
+
+.woocommerce label {
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   TABELAS
+   ======================================== */
+.woocommerce table.shop_table {
+    background: transparent;
+    color: #D1D5DB;
+    border: 2px solid #374151;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.woocommerce table.shop_table th {
+    background: rgba(124, 58, 237, 0.15);
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 1rem;
+    border: none;
+}
+
+.woocommerce table.shop_table td {
+    padding: 1rem;
+    border-bottom: 1px solid #374151;
+    color: #D1D5DB;
+}
+
+.woocommerce table.shop_table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ========================================
+   CARRINHO
+   ======================================== */
+.woocommerce-cart .cart-empty {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: #9CA3AF;
+    font-family: 'Inter', sans-serif;
+}
+
+.woocommerce .quantity input {
+    background: #161622 !important;
+    border: 2px solid #374151 !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    padding: 0.5rem !important;
+}
+
+/* ========================================
+   CHECKOUT
+   ======================================== */
+.woocommerce-checkout .woocommerce-billing-fields,
+.woocommerce-checkout .woocommerce-shipping-fields,
+.woocommerce-checkout .woocommerce-additional-fields {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.woocommerce-checkout h3 {
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+#order_review_heading {
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+#order_review {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+/* ========================================
+   PRODUTOS
+   ======================================== */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.woocommerce ul.products li.product:hover {
+    transform: translateY(-4px);
+    border-color: #7C3AED;
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.3);
+    background: #252F3F;
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    font-size: 1.25rem;
+}
+
+.woocommerce ul.products li.product .price {
+    color: #10B981;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+}
+
+/* ========================================
+   SINGLE PRODUCT
+   ======================================== */
+.woocommerce div.product {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 2.5rem;
+}
+
+.woocommerce div.product .product_title {
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.woocommerce div.product p.price {
+    color: #10B981;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.woocommerce div.product .woocommerce-product-details__short-description {
+    color: #D1D5DB;
+    line-height: 1.8;
+}
+
+/* ========================================
+   NAVEGAÇÃO MINHA CONTA
+   ======================================== */
+.woocommerce-MyAccount-navigation {
+    background: #1F2937;
+    border: 2px solid #374151;
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+.woocommerce-MyAccount-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.woocommerce-MyAccount-navigation li {
+    margin-bottom: 0.5rem;
+}
+
+.woocommerce-MyAccount-navigation a {
+    display: block;
+    padding: 0.875rem 1.25rem;
+    color: #D1D5DB;
+    text-decoration: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.woocommerce-MyAccount-navigation a:hover {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7C3AED;
+    border-color: #7C3AED;
+}
+
+.woocommerce-MyAccount-navigation li.is-active a {
+    background: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+/* ========================================
+   MENSAGENS E NOTICES
+   ======================================== */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+    background: #1F2937 !important;
+    border: 2px solid #374151 !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.5rem !important;
+    color: #D1D5DB !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.woocommerce-message {
+    border-left: 4px solid #10B981 !important;
+}
+
+.woocommerce-info {
+    border-left: 4px solid #3B82F6 !important;
+}
+
+.woocommerce-error {
+    border-left: 4px solid #DC2626 !important;
+}
+
+/* ========================================
+   BREADCRUMB
+   ======================================== */
+.woocommerce-breadcrumb {
+    color: #9CA3AF;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 2rem;
+}
+
+.woocommerce-breadcrumb a {
+    color: #7C3AED;
+    text-decoration: none;
+}
+
+.woocommerce-breadcrumb a:hover {
+    color: #3B82F6;
+}
+
+/* ========================================
+   PAGINAÇÃO
+   ======================================== */
+.woocommerce nav.woocommerce-pagination ul {
+    border: none;
+}
+
+.woocommerce nav.woocommerce-pagination ul li {
+    border: none;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span {
+    background: #1F2937;
+    color: #FFFFFF;
+    border: 2px solid #374151;
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a:hover {
+    background: #7C3AED;
+    border-color: #7C3AED;
+}
+
+.woocommerce nav.woocommerce-pagination ul li span.current {
+    background: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+    border-color: #7C3AED;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+@media (max-width: 768px) {
+    .woocommerce .cart-collaterals,
+    .woocommerce-checkout,
+    .woocommerce form,
+    #order_review {
+        padding: 1.5rem;
+    }
+    
+    .woocommerce div.product {
+        padding: 1.5rem;
+    }
+}
+
+/* ========================================
+   COMPATIBILIDADE COM PLUGINS
+   ======================================== */
+/* Stripe */
+.wc-stripe-elements-field,
+.wc-stripe-iban-element-field {
+    background: #161622 !important;
+    border: 2px solid #374151 !important;
+    border-radius: 10px !important;
+    padding: 0.875rem 1rem !important;
+}
+
+/* PayPal */
+.woocommerce-checkout #payment .payment_method_paypal img {
+    filter: brightness(0.9);
+}
+
+/* ========================================
+   AJUSTES FINAIS
+   ======================================== */
+.woocommerce .blockUI.blockOverlay {
+    background: rgba(15, 15, 26, 0.8) !important;
+}
+
+.woocommerce a {
+    color: #7C3AED;
+    transition: color 0.2s;
+}
+
+.woocommerce a:hover {
+    color: #3B82F6;
+}

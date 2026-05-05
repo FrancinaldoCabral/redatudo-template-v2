@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 .redatudo-billing-heading {
     font-family: 'Orbitron', Arial, sans-serif;
     font-size: 1.41rem;
-    color: #00ffd0;
+    color: #FFFFFF;
     margin: 1.2em 0 1.3em 0;
     letter-spacing: 1.1px;
     text-transform: uppercase;
@@ -23,44 +23,44 @@ defined('ABSPATH') || exit;
 .redatudo-billing-fields > div {
     margin-bottom: 1.16em !important;
 }
-.woocommerce form .form-row label,
-.woocommerce form .form-group label {
-    font-family: 'Orbitron', Arial, sans-serif;
-    color: #00ffd0;
-    letter-spacing: .8px;
+.redatudo-billing-fields .form-row label,
+.redatudo-billing-fields .form-group label {
+    font-family: 'Inter', Arial, sans-serif;
+    color: #E5E7EB;
+    letter-spacing: .3px;
     font-weight: 600;
     margin-bottom: .25em;
-    font-size: 1em;
+    font-size: 0.95em;
 }
-.woocommerce input[type="text"],
-.woocommerce input[type="email"],
-.woocommerce input[type="tel"],
-.woocommerce input[type="password"],
-.woocommerce select {
+.redatudo-billing-fields input[type="text"],
+.redatudo-billing-fields input[type="email"],
+.redatudo-billing-fields input[type="tel"],
+.redatudo-billing-fields input[type="password"],
+.redatudo-billing-fields select {
     border-radius: 13px !important;
-    border: 1.5px solid #28286e !important;
-    background: #171727 !important;
-    color: #00ffd0 !important;
-    box-shadow: 0 1px 11px #00bfff23;
+    border: 1.5px solid rgba(75, 85, 99, 0.3) !important;
+    background: rgba(17, 24, 39, 0.8) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
     padding: .75em 1.08em;
     font-size: 1.04em;
-    font-family: 'Orbitron', Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     transition: border-color .15s, box-shadow .18s;
 }
-.woocommerce input[type="text"]:focus,
-.woocommerce input[type="email"]:focus,
-.woocommerce input[type="tel"]:focus,
-.woocommerce input[type="password"]:focus,
-.woocommerce select:focus {
-    border-color: #00ffd0 !important;
-    background: #101022 !important;
-    color: #00ffd0 !important;
-    box-shadow: 0 2px 13px #00ffd043;
+.redatudo-billing-fields input[type="text"]:focus,
+.redatudo-billing-fields input[type="email"]:focus,
+.redatudo-billing-fields input[type="tel"]:focus,
+.redatudo-billing-fields input[type="password"]:focus,
+.redatudo-billing-fields select:focus {
+    border-color: rgba(124, 58, 237, 0.5) !important;
+    background: rgba(17, 24, 39, 0.95) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 13px rgba(124, 58, 237, 0.2);
 }
-.woocommerce .form-row {
+.redatudo-billing-fields .form-row {
     margin-bottom: 1em !important;
 }
-.woocommerce ::placeholder { color: #b8e6ff; opacity: 1;}
+.redatudo-billing-fields ::placeholder { color: #9CA3AF; opacity: 1;}
 /* Tira margem duplicada de cadastrar conta */
 .woocommerce-form__label-for-checkbox {
     margin-top: 1.1em;

@@ -160,7 +160,7 @@
         </span>
       </div>
       <div class="col-12 col-md-4 my-2 footer-actions">
-        <a class="footer-link" href="https://redatudo.online/minha-conta?login_app=chat">Entrar</a> <br>
+        <a class="footer-link" href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>">Entrar</a> <br>
         <a class="footer-link" href="https://redatudo.online/programa-de-afiliados">Afiliados</a>
       </div>
     </div>
@@ -240,6 +240,174 @@ document.addEventListener('click', function(e) {
     }
   }
 });
+</script>
+
+<!-- ── GA4 Semantic Event Tracking ── -->
+<script>
+(function () {
+  'use strict';
+
+  // Wrapper seguro: só dispara se gtag existir (Site Kit ou gtag.js)
+  function rdGA4(eventName, params) {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', eventName, Object.assign({ send_to: 'GA4' }, params || {}));
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────
+  function getPlacement(el) {
+    if (el.closest('header, .navbar, nav')) return 'header';
+    if (el.closest('.hero, .banner-cta-home, [class*="hero"]')) return 'hero';
+    if (el.closest('.sidebar-post-content, aside')) return 'sidebar';
+    if (el.closest('footer, .site-footer')) return 'footer';
+    if (el.closest('.tool-highlight-card')) return 'sidebar_tool_card';
+    if (el.closest('.rdtd-affiliate-ad')) return 'affiliate_ad';
+    return 'main';
+  }
+
+  function getPageType() {
+    var b = document.body;
+    if (b.classList.contains('single-post')) return 'post';
+    if (b.classList.contains('category') || b.classList.contains('tag')) return 'archive';
+    if (b.classList.contains('home') || b.classList.contains('blog')) return 'home';
+    if (b.classList.contains('page')) return 'page';
+    return 'other';
+  }
+
+  var PAGE_TYPE = getPageType();
+
+  // ── 1. Handler genérico via data-ga4 ───────────────────────────────────
+  // Qualquer elemento com data-ga4="nome_do_evento" dispara automaticamente.
+  // Parâmetros extras em data-ga4-* (ex: data-ga4-placement="sidebar")
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ga4]');
+    if (!el) return;
+    var eventName = el.getAttribute('data-ga4');
+    if (eventName === 'affiliate_impression') return; // impressão é por IntersectionObserver
+    var params = { page_type: PAGE_TYPE };
+    for (var i = 0; i < el.attributes.length; i++) {
+      var attr = el.attributes[i];
+      if (attr.name.startsWith('data-ga4-')) {
+        var key = attr.name.slice(9).replace(/-/g, '_');
+        params[key] = attr.value;
+      }
+    }
+    if (eventName === 'affiliate_click') params.outbound = true;
+    rdGA4(eventName, params);
+  });
+
+  // ── 2. Clicks em links de apps Redatudo ────────────────────────────────
+  // Detecta qualquer href para *.redatudo.online e dispara app_link_click
+  // com app_name, tool_name e placement.
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (!href.includes('.redatudo.online')) return;
+    if (link.hasAttribute('data-ga4')) return; // já tratado acima
+
+    var m = href.match(/https?:\/\/([^.]+)\.redatudo\.online/);
+    var appName = m ? m[1] : 'unknown';
+    var toolText = (link.textContent || '').replace(/[^\w\sÀ-ÿ]/gu, '').trim().slice(0, 60);
+
+    rdGA4('app_link_click', {
+      app_name:  appName,
+      tool_name: toolText || appName,
+      placement: getPlacement(link),
+      page_type: PAGE_TYPE,
+    });
+  });
+
+  // ── 3. Clicks em CTAs principais ───────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-primary, .cta-link, .tool-highlight-link');
+    if (!btn) return;
+    if (btn.hasAttribute('data-ga4')) return;
+    if ((btn.getAttribute('href') || '').includes('.redatudo.online')) return; // já coberto acima
+    rdGA4('cta_click', {
+      cta_text:  (btn.textContent || '').trim().slice(0, 60),
+      placement: getPlacement(btn),
+      page_type: PAGE_TYPE,
+    });
+  });
+
+  // ── 4. Botão de login / Entrar ─────────────────────────────────────────
+  var loginBtn = document.getElementById('btnEntrar');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function () {
+      rdGA4('login_intent', {
+        source_path: window.location.pathname,
+        page_type:   PAGE_TYPE,
+      });
+    });
+  }
+
+  // ── 5. Busca interna ───────────────────────────────────────────────────
+  document.querySelectorAll('#searchform, form[role="search"]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var q = form.querySelector('input[name="s"]');
+      rdGA4('search', {
+        search_term: q ? q.value.trim().slice(0, 100) : '',
+        source:      'site_search',
+        page_type:   PAGE_TYPE,
+      });
+    });
+  });
+
+  // ── 6. Links sociais ───────────────────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a.social-link, .widget-socials a');
+    if (!link) return;
+    var h = link.getAttribute('href') || '';
+    var network = h.includes('linkedin') ? 'linkedin'
+      : h.includes('facebook')  ? 'facebook'
+      : h.includes('instagram') ? 'instagram'
+      : h.includes('mastodon')  ? 'mastodon'
+      : h.includes('threads')   ? 'threads'
+      : (h.includes('twitter') || h.includes('x.com')) ? 'twitter'
+      : 'other';
+    rdGA4('social_click', { social_network: network, page_type: PAGE_TYPE });
+  });
+
+  // ── 7. Impressão de cards afiliados (IntersectionObserver) ─────────────
+  if ('IntersectionObserver' in window) {
+    var seen = new Set();
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el  = entry.target;
+        var uid = el.id || el.getAttribute('data-ga4-placement') || Math.random();
+        if (seen.has(uid)) return;
+        seen.add(uid);
+        rdGA4('affiliate_impression', {
+          ad_placement: el.getAttribute('data-ga4-placement') || '',
+          ad_product:   el.getAttribute('data-ga4-product')   || '',
+          page_type:    PAGE_TYPE,
+        });
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-ga4="affiliate_impression"]').forEach(function (ad) {
+      observer.observe(ad);
+    });
+  }
+
+  // ── 8. Profundidade de scroll ──────────────────────────────────────────
+  var scrollMilestones = [25, 50, 75, 90];
+  var scrollFired = {};
+  window.addEventListener('scroll', function () {
+    var scrolled = Math.round(
+      (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+    );
+    scrollMilestones.forEach(function (pct) {
+      if (!scrollFired[pct] && scrolled >= pct) {
+        scrollFired[pct] = true;
+        rdGA4('scroll_depth', { percent: pct, page_type: PAGE_TYPE });
+      }
+    });
+  }, { passive: true });
+
+})();
 </script>
 
 <?php wp_footer(); ?>

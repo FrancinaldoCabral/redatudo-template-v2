@@ -13,7 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="row">
 	<div class="col">
-		
+
+		<?php
+		// Se não houver assinaturas carregadas, tentar buscar manualmente
+		if ( empty( $subscriptions ) && function_exists('wcs_get_users_subscriptions') ) {
+			$subscriptions = wcs_get_users_subscriptions( get_current_user_id() );
+		}
+		?>
+
 		<?php if ( ! empty( $subscriptions ) ) : ?>
 		<table class="table">
 

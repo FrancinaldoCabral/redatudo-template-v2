@@ -1,0 +1,721 @@
+<div class="container py-5 text-center text-light position-relative hero-bg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      background: #0F0F1A;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .hero-bg {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(59,130,246,0.08) 40%, transparent 70%);
+      transform: translateX(-50%);
+      z-index: 0;
+      filter: blur(100px);
+      animation: pulseHeroGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulseHeroGlow {
+      0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+    }
+
+    .hero-badge {
+      background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+      color: #92400E;
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      border: 2px solid #FCD34D;
+      position: relative;
+      z-index: 2;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .hero-title {
+      color: #FFFFFF;
+      font-size: clamp(2rem, 5vw, 3.75rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      font-family: 'Outfit', sans-serif;
+      position: relative;
+      z-index: 2;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #A78BFA 0%, #60A5FA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      color: #D1D5DB;
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+      max-width: 750px;
+      position: relative;
+      z-index: 2;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .typed-text-container {
+      margin-bottom: 2.5rem;
+      min-height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .typed-text {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 600;
+      background: linear-gradient(92deg, #34D399 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.3px;
+      white-space: pre-line;
+      word-break: break-word;
+      max-width: 90vw;
+      padding-right: 8px;
+      border-right: 3px solid #10B981;
+      animation: textBlink 1s steps(1) infinite;
+    }
+
+    @keyframes textBlink {
+      0%, 100% { border-color: #10B981; }
+      50% { border-color: transparent; }
+    }
+
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-cta-primary {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      padding: 1rem 2.5rem;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      text-decoration: none;
+      font-size: 1.125rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cta-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-cta-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      text-decoration: none;
+      color: #FFFFFF;
+    }
+
+    .btn-cta-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      padding: 1rem 2.5rem;
+      font-weight: 600;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      text-decoration: none;
+      font-size: 1.125rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-cta-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #FFFFFF;
+      text-decoration: none;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 2rem;
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stat strong {
+      font-size: 2.5rem;
+      color: #A78BFA;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .stat span {
+      color: #D1D5DB;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .hero-badge { font-size: 0.85rem; padding: 0.6rem 1.2rem; }
+      .typed-text { font-size: 1rem; }
+      .cta-buttons { flex-direction: column; width: 100%; max-width: 400px; }
+      .btn-cta-primary, .btn-cta-secondary { width: 100%; }
+      .hero-stats { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+  </style>
+
+  <div class="hero-glow"></div>
+  
+  <div class="hero-badge">
+    🎉 LANÇAMENTO: 13 Ferramentas Especializadas • 50% OFF Hoje
+  </div>
+
+  <h1 class="hero-title">
+    <span class="gradient-text">13 Ferramentas de IA.</span><br>
+    1 Assinatura. Infinitas Criações.
+  </h1>
+
+  <div class="hero-subtitle">
+    Do TCC ao Instagram. Do e-commerce ao ebook.<br>
+    Crie conteúdo profissional em segundos, não horas.
+  </div>
+
+  <div class="typed-text-container">
+    <span class="typed-text" id="typedText"></span>
+  </div>
+
+  <div class="cta-buttons">
+    <a href="https://redatudo.online/minha-conta?login_app=hub" class="btn-cta-primary">
+      Começar Grátis Agora
+    </a>
+    <a href="#ferramentas" class="btn-cta-secondary">
+      Ver Todas as 13 Ferramentas
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <strong>287.432</strong>
+      <span>conteúdos criados</span>
+    </div>
+    <div class="stat">
+      <strong>4.9★</strong>
+      <span>avaliação média</span>
+    </div>
+    <div class="stat">
+      <strong>12.4k</strong>
+      <span>criadores ativos</span>
+    </div>
+  </div>
+
+  <script>
+    const phrases = [
+      "📘 Crie ebooks completos em 10 minutos",
+      "✍️ Gere legendas virais para Instagram",
+      "🎓 Desenvolva introduções acadêmicas perfeitas",
+      "🛍️ Escreva descrições de produtos que vendem",
+      "💡 Invente títulos criativos para qualquer conteúdo",
+      "🔄 Reformule textos mantendo a essência",
+      "✅ Corrija textos no padrão ABNT automaticamente",
+      "📱 Crie posts completos para redes sociais",
+      "💭 Gere frases motivacionais únicas",
+      "🎯 Encontre o tema perfeito para seu TCC",
+      "🤖 Transforme texto de IA em conteúdo humano",
+      "📊 Gere ideias infinitas de conteúdo",
+      "#️⃣ Descubra hashtags que bombarão seu post"
+    ];
+
+    const typedText = document.getElementById("typedText");
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let typing = true;
+
+    function typeLoop() {
+      const currentPhrase = phrases[phraseIndex];
+
+      if (typing) {
+        typedText.textContent = currentPhrase.substring(0, charIndex++);
+        if (charIndex > currentPhrase.length) {
+          typing = false;
+          setTimeout(typeLoop, 2000);
+        } else {
+          setTimeout(typeLoop, 50);
+        }
+      } else {
+        typedText.textContent = currentPhrase.substring(0, charIndex--);
+        if (charIndex < 0) {
+          typing = true;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          setTimeout(typeLoop, 500);
+        } else {
+          setTimeout(typeLoop, 30);
+        }
+      }
+    }
+    typeLoop();
+  </script>
+</div>
+
+<section class="ferramentas-section py-5" id="ferramentas">
+  <style>
+    .ferramentas-section {
+      background: #0F0F1A;
+      position: relative;
+      z-index: 1;
+      padding-top: 4rem !important;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-badge {
+      display: inline-block;
+      background: rgba(167, 139, 250, 0.15);
+      color: #C4B5FD;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #FFFFFF;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 1.25rem;
+      color: #E5E7EB;
+      max-width: 700px;
+      margin: 0 auto;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1rem 0;
+      overflow: visible;
+    }
+
+    .tool-card {
+      background: linear-gradient(145deg, rgba(31, 41, 55, 0.5) 0%, rgba(17, 24, 39, 0.5) 100%);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(75, 85, 99, 0.3);
+      border-radius: 24px;
+      padding: 2rem;
+      padding-top: 2.5rem;
+      margin-top: 1.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      overflow: visible;
+    }
+
+    .tool-card:hover {
+      border-color: var(--tool-color);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(145deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.9) 100%);
+    }
+
+    .tool-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      z-index: 10;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      border: 2px solid #0F0F1A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .tool-card:hover .tool-badge {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .badge-hot {
+      background: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
+      color: #FFFFFF;
+    }
+
+    .badge-new {
+      background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+      color: #FFFFFF;
+    }
+
+    .tool-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--tool-color, #7C3AED);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .tool-card:hover .tool-icon {
+      transform: rotate(-5deg) scale(1.1);
+    }
+
+    .tool-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFFFFF !important;
+      margin-bottom: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    .tool-description {
+      color: #D1D5DB;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    .tool-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.3);
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-stats span {
+      color: #F3F4F6;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .tool-stats .rating {
+      color: #FBBF24;
+      font-weight: 700;
+    }
+
+    .btn-tool {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: var(--tool-color, #7C3AED);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-tool:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      color: #FFFFFF;
+      text-decoration: none;
+      filter: brightness(1.15);
+    }
+
+    @media (max-width: 768px) {
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .tool-badge {
+        font-size: 0.7rem;
+        padding: 6px 14px;
+      }
+    }
+  </style>
+
+  <div class="container px-3">
+    <div class="section-header">
+      <span class="section-badge">🚀 FERRAMENTAS ESPECIALIZADAS</span>
+      <h2 class="section-title">Cada ferramenta resolve um problema específico</h2>
+      <p class="section-subtitle">
+        Não é um ChatGPT genérico. São 13 soluções profissionais em uma única plataforma.
+      </p>
+    </div>
+
+    <div class="tools-grid">
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('ebook')); ?>" class="tool-card" style="--tool-color: #7C3AED;">
+        <span class="tool-badge badge-hot">🔥 Mais Usado</span>
+        <div class="tool-icon">📚</div>
+        <h3 class="tool-title">Gerador de Ebook</h3>
+        <p class="tool-description">Crie ebooks completos com capítulos, imagens e formatação profissional em 10 minutos</p>
+        <div class="tool-stats">
+          <span>18.7k gerações hoje</span>
+          <span class="rating">⭐ 4.9</span>
+        </div>
+        <span class="btn-tool">Criar Meu Ebook →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #8B5CF6;">
+        <span class="tool-badge badge-hot">🔥 Popular</span>
+        <div class="tool-icon">💡</div>
+        <h3 class="tool-title">Gerador de Títulos</h3>
+        <p class="tool-description">Títulos criativos para livros, vídeos, posts e TCCs que chamam atenção</p>
+        <div class="tool-stats">
+          <span>12.4k gerações hoje</span>
+          <span class="rating">⭐ 4.9</span>
+        </div>
+        <span class="btn-tool">Gerar Títulos →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #EC4899;">
+        <span class="tool-badge badge-new">✨ Novo</span>
+        <div class="tool-icon">📸</div>
+        <h3 class="tool-title">Legendas Instagram</h3>
+        <p class="tool-description">Legendas virais com hashtags estratégicas para bombar seu perfil</p>
+        <div class="tool-stats">
+          <span>8.9k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Criar Legenda →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #3B82F6;">
+        <div class="tool-icon">🎓</div>
+        <h3 class="tool-title">Gerador de Introdução</h3>
+        <p class="tool-description">Introduções acadêmicas prontas para TCCs, artigos e trabalhos</p>
+        <div class="tool-stats">
+          <span>7.2k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Gerar Introdução →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #06B6D4;">
+        <span class="tool-badge badge-new">✨ Novidade</span>
+        <div class="tool-icon">✍️</div>
+        <h3 class="tool-title">Humanizador de Texto</h3>
+        <p class="tool-description">Transforme texto de IA em conteúdo natural e autêntico</p>
+        <div class="tool-stats">
+          <span>5.8k gerações hoje</span>
+          <span class="rating">⭐ 4.9</span>
+        </div>
+        <span class="btn-tool">Humanizar Texto →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #10B981;">
+        <div class="tool-icon">🛍️</div>
+        <h3 class="tool-title">ShopCopy</h3>
+        <p class="tool-description">Descrições de produtos irresistíveis para e-commerce</p>
+        <div class="tool-stats">
+          <span>4.3k gerações hoje</span>
+          <span class="rating">⭐ 4.7</span>
+        </div>
+        <span class="btn-tool">Gerar Descrição →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #3B82F6;">
+        <div class="tool-icon">📋</div>
+        <h3 class="tool-title">Gerador de Temas TCC</h3>
+        <p class="tool-description">Encontre o tema perfeito com justificativa e relevância acadêmica</p>
+        <div class="tool-stats">
+          <span>3.1k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Encontrar Tema →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #6366F1;">
+        <div class="tool-icon">🔄</div>
+        <h3 class="tool-title">Reformulador</h3>
+        <p class="tool-description">Reescreva textos mantendo a mensagem, evitando plágio</p>
+        <div class="tool-stats">
+          <span>6.7k gerações hoje</span>
+          <span class="rating">⭐ 4.7</span>
+        </div>
+        <span class="btn-tool">Reformular Texto →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #7C3AED;">
+        <div class="tool-icon">📝</div>
+        <h3 class="tool-title">Gerador Copy AIDA</h3>
+        <p class="tool-description">Copies de vendas prontas no método AIDA que convertem</p>
+        <div class="tool-stats">
+          <span>2.8k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Criar Copy →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #8B5CF6;">
+        <div class="tool-icon">✅</div>
+        <h3 class="tool-title">Corretor ABNT</h3>
+        <p class="tool-description">Corrija e formate textos no padrão ABNT automaticamente</p>
+        <div class="tool-stats">
+          <span>4.9k gerações hoje</span>
+          <span class="rating">⭐ 4.6</span>
+        </div>
+        <span class="btn-tool">Corrigir Texto →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #F59E0B;">
+        <div class="tool-icon">#️⃣</div>
+        <h3 class="tool-title">Gerador de Hashtags</h3>
+        <p class="tool-description">Hashtags estratégicas para Instagram baseadas em análise de tendências</p>
+        <div class="tool-stats">
+          <span>3.5k gerações hoje</span>
+          <span class="rating">⭐ 4.7</span>
+        </div>
+        <span class="btn-tool">Gerar Hashtags →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #14B8A6;">
+        <div class="tool-icon">🏁</div>
+        <h3 class="tool-title">Gerador de Conclusão</h3>
+        <p class="tool-description">Conclusões acadêmicas estruturadas para TCCs e artigos</p>
+        <div class="tool-stats">
+          <span>2.1k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Gerar Conclusão →</span>
+      </a>
+
+      <a href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>" class="tool-card" style="--tool-color: #A855F7;">
+        <div class="tool-icon">💬</div>
+        <h3 class="tool-title">Frases Motivacionais</h3>
+        <p class="tool-description">Frases únicas e inspiradoras para posts de Instagram</p>
+        <div class="tool-stats">
+          <span>1.9k gerações hoje</span>
+          <span class="rating">⭐ 4.9</span>
+        </div>
+        <span class="btn-tool">Gerar Frases →</span>
+      </a>
+
+      <a href="/nomes-livros" class="tool-card" style="--tool-color: #F43F5E;">
+        <div class="tool-icon">📖</div>
+        <h3 class="tool-title">Nomes de Livros</h3>
+        <p class="tool-description">Títulos criativos e cativantes para seu livro ou romance</p>
+        <div class="tool-stats">
+          <span>1.2k gerações hoje</span>
+          <span class="rating">⭐ 4.7</span>
+        </div>
+        <span class="btn-tool">Criar Nome →</span>
+      </a>
+
+      <a href="/username-generator" class="tool-card" style="--tool-color: #06B6D4;">
+        <div class="tool-icon">@</div>
+        <h3 class="tool-title">Gerador de Username</h3>
+        <p class="tool-description">Usernames criativos e disponíveis para Instagram</p>
+        <div class="tool-stats">
+          <span>2.4k gerações hoje</span>
+          <span class="rating">⭐ 4.6</span>
+        </div>
+        <span class="btn-tool">Gerar Username →</span>
+      </a>
+
+      <a href="/ideias-conteudo" class="tool-card" style="--tool-color: #84CC16;">
+        <div class="tool-icon">💭</div>
+        <h3 class="tool-title">Gerador de Ideias</h3>
+        <p class="tool-description">Ideias infinitas de conteúdo para blogs, vídeos e redes sociais</p>
+        <div class="tool-stats">
+          <span>3.7k gerações hoje</span>
+          <span class="rating">⭐ 4.8</span>
+        </div>
+        <span class="btn-tool">Gerar Ideias →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section class="casos-section py-5" id="casos">
+  <style>
+    .casos-section {
+      background: #161622;
+      position: relative;
+      z-index: 1;

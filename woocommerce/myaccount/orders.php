@@ -20,6 +20,14 @@
 defined( 'ABSPATH' ) || exit;
 
 ?>
+<style>
+	.woocommerce a {
+		color: #fff;
+	}
+	.woocommerce a:hover {
+		color: var(--bs-secondary-color);
+	}
+</style>
 
 <div class="row">
 	<div class="col">

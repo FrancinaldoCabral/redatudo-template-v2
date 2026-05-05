@@ -15,8 +15,6 @@
     <meta name="description" content="<?php bloginfo( 'description' ); ?>">
     <meta name="keywords" content="">
     <meta name="author" content="Naldo Cabral">
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9848635946946970"
-     crossorigin="anonymous"></script>
     <?php wp_head(); ?>
     <style>
        :root {
@@ -11699,7 +11697,7 @@
                         </li>
                     </ul>
                     <form class="d-flex ml-2">
-                        <button id="acessar-ia-btn-header" class="btn btn-primary my-2 my-sm-0">Acessar IA</button>
+                        <button id="acessar-ia-btn-header" class="btn btn-primary my-2 my-sm-0">Acessar Hub</button>
                     </form>
                 </div>
             </div>
@@ -11793,7 +11791,7 @@
                 <a href="<?php echo get_option('home'); ?>#assine-agora">Assinar agora</a> <br>
                 <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">Minha conta</a> <br>
                 <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">Teste grátis</a> <br>
-                <a class="destaque" href="https://app.redatudo.online/">Acessar IA</a>
+                <a class="destaque" href="<?php echo esc_url(redatudo_get_app_url('hub')); ?>">Acessar Hub</a>
             </div>
             <div class="col-4 p-2 text-center">
                 <img src="https://redatudo.online/wp-content/uploads/2022/02/redatudo-logotipo-e-texto-fundo-transparente-88x42-1-1-1.png"
@@ -15184,7 +15182,7 @@
         var userToken = user.token;
         var acessarIaBtn = document.getElementById("acessar-ia-btn-header");
         acessarIaBtn.addEventListener("click", async function(){
-            window.location = "https://app.redatudo.online/?token="+userToken;
+            window.location = "<?php echo esc_url(str_replace('?token=', '', redatudo_get_app_url('hub'))); ?>?token="+userToken;
         });
     </script>
     <?php wp_footer(); ?>

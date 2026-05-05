@@ -25,6 +25,95 @@ $types         = wc_get_account_payment_methods_types();
 
 do_action( 'woocommerce_before_account_payment_methods', $has_methods ); ?>
 
+<style>
+.reda-payment-methods-card {
+    background: #181733ee;
+    border-radius: 22px;
+    box-shadow: 0 4px 32px #00bfff1a;
+    padding: 2.3em 2em;
+    margin-bottom: 2rem;
+    font-family: 'Orbitron', Arial, sans-serif;
+    color: #b8e6ff;
+}
+
+.reda-payment-methods-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(100deg,#00ffd0 60%,#7f00ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+}
+
+.reda-payment-methods-card table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.reda-payment-methods-card thead {
+    background: #121225;
+}
+
+.reda-payment-methods-card th,
+.reda-payment-methods-card td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid #232948;
+    color: #e5edff;
+}
+
+.reda-payment-methods-card tr:last-child td {
+    border-bottom: none;
+}
+
+.reda-payment-methods-card tr.default-payment-method {
+    border-left: 4px solid #00ffd0;
+    background: #141225;
+}
+
+.reda-payment-methods-card a.button {
+    background: linear-gradient(90deg, #7f00ff 50%, #00bfff 100%);
+    border: none;
+    border-radius: 16px;
+    color: #fff !important;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+}
+
+.reda-payment-methods-card a.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px #00ffd023;
+}
+
+.reda-payment-methods-card .woocommerce-info {
+    background: #0f1a27;
+    border-color: #00bfff55;
+}
+
+.reda-payment-methods-card .add-payment-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: linear-gradient(90deg, #7f00ff 50%, #00bfff 100%);
+    border: none;
+    border-radius: 22px;
+    color: #fff;
+    font-weight: 700;
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    transition: transform .19s, box-shadow .14s;
+}
+
+.reda-payment-methods-card .add-payment-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px #00ffd084;
+}
+</style>
+
 <?php if ( $has_methods ) : ?>
 
 	<table class="woocommerce-MyAccount-paymentMethods shop_table shop_table_responsive account-payment-methods-table">
@@ -74,5 +163,6 @@ do_action( 'woocommerce_before_account_payment_methods', $has_methods ); ?>
 <?php do_action( 'woocommerce_after_account_payment_methods', $has_methods ); ?>
 
 <?php if ( WC()->payment_gateways->get_available_payment_gateways() ) : ?>
-	<a class="button" href="<?php echo esc_url( wc_get_endpoint_url( 'add-payment-method' ) ); ?>"><?php esc_html_e( 'Add payment method', 'woocommerce' ); ?></a>
+	<a class="add-payment-btn" href="<?php echo esc_url( wc_get_endpoint_url( 'add-payment-method' ) ); ?>"><?php esc_html_e( 'Add payment method', 'woocommerce' ); ?></a>
 <?php endif; ?>
+</div>
