@@ -410,6 +410,226 @@ document.addEventListener('click', function(e) {
 })();
 </script>
 
+<!-- ── RDTD Behavioral Tracking → MongoDB ──────────────────────────────────
+     Espelha eventos do WordPress para o mesmo MongoDB usado pelos apps.
+     visitor_id atravessa domínios via query param ?_rdtd_vid=
+     para conectar: post lido → CTA clicado → app aberto → compra.
+     ──────────────────────────────────────────────────────────────────── -->
+<script>
+(function () {
+  'use strict';
+
+  var TRACK_URL = 'https://api.redatudo.online/track';
+
+  // ── Identity ──────────────────────────────────────────────────────────
+  // wp_user_id injetado pelo PHP (wp_head) se estiver logado
+  var uid = window._rdtd_uid || null;
+
+  // visitor_id persistente no localStorage — sobrevive a saída/entrada
+  // Se veio de um app via ?_rdtd_vid=, herda o mesmo ID (fecha o círculo)
+  var incomingVid = new URLSearchParams(window.location.search).get('_rdtd_vid');
+  var vid = incomingVid || localStorage.getItem('_rdtd_vid');
+  if (!vid) {
+    vid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2) + Date.now();
+  }
+  localStorage.setItem('_rdtd_vid', vid);
+
+  // session_id por aba — reseta a cada novo contexto de navegação
+  var sid = sessionStorage.getItem('_rdtd_sid');
+  if (!sid) {
+    sid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2) + Date.now();
+    sessionStorage.setItem('_rdtd_sid', sid);
+  }
+
+  // UTMs da URL atual
+  function getUTMs() {
+    var p   = new URLSearchParams(window.location.search);
+    var out = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) {
+      var v = p.get(k);
+      if (v) out[k] = v;
+    });
+    return out;
+  }
+
+  function getPageType() {
+    var b = document.body;
+    if (b.classList.contains('single-post'))          return 'post';
+    if (b.classList.contains('single-product'))       return 'product';
+    if (b.classList.contains('category'))             return 'category';
+    if (b.classList.contains('tag'))                  return 'tag';
+    if (b.classList.contains('home'))                 return 'home';
+    if (b.classList.contains('blog'))                 return 'blog';
+    if (b.classList.contains('woocommerce-checkout')) return 'checkout';
+    if (b.classList.contains('woocommerce-cart'))     return 'cart';
+    if (b.classList.contains('page'))                 return 'page';
+    return 'other';
+  }
+
+  function getPlacement(el) {
+    if (el.closest('header, .navbar, nav'))                     return 'header';
+    if (el.closest('.hero, .banner-cta-home, [class*="hero"]')) return 'hero';
+    if (el.closest('.sidebar-post-content, aside'))             return 'sidebar';
+    if (el.closest('footer, .redatudo-footer'))                 return 'footer';
+    return 'content';
+  }
+
+  // Fire-and-forget — keepalive garante envio mesmo no pagehide/saída
+  function rdTrack(event, props) {
+    var payload = {
+      event:      event,
+      wp_user_id: uid,
+      source:     'wordpress',
+      session_id: sid,
+      properties: Object.assign(
+        {
+          visitor_id: vid,
+          url:        window.location.pathname,
+          referrer:   document.referrer || '',
+          page_type:  PAGE_TYPE,
+        },
+        getUTMs(),
+        props || {}
+      ),
+    };
+    fetch(TRACK_URL, {
+      method:    'POST',
+      headers:   { 'Content-Type': 'application/json' },
+      body:      JSON.stringify(payload),
+      keepalive: true,
+    }).catch(function () {});
+  }
+
+  // Expõe para outros scripts do tema usarem
+  window.rdTrack = rdTrack;
+
+  var PAGE_TYPE = getPageType();
+  var startTime = Date.now();
+
+  // ── 1. page_view — todas as páginas (blog, home, landing, página estática)
+  rdTrack('page_view', {
+    title:     document.title.slice(0, 120),
+    page_type: PAGE_TYPE,
+  });
+
+  // ── 2. post_read — post lido de verdade (75% de scroll)
+  //    Dado estratégico: qual conteúdo converte em usuário de app
+  if (PAGE_TYPE === 'post') {
+    var readFired = false;
+    var h1El      = document.querySelector('h1.entry-title, h1');
+    var postTitle = h1El ? h1El.textContent.trim().slice(0, 120) : document.title.slice(0, 80);
+    var catEl     = document.querySelector('.cat-links a, .entry-categories a, .post-categories a');
+    var postCat   = catEl ? catEl.textContent.trim() : '';
+
+    window.addEventListener('scroll', function () {
+      if (readFired) return;
+      var scrollable = document.body.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+      if ((window.scrollY / scrollable) * 100 >= 75) {
+        readFired = true;
+        rdTrack('post_read', {
+          post_title:     postTitle,
+          category:       postCat,
+          time_to_read_s: Math.round((Date.now() - startTime) / 1000),
+        });
+      }
+    }, { passive: true });
+  }
+
+  // ── 3. cta_click — cliques em links para os apps redatudo
+  //    IMPORTANTE: appenda ?_rdtd_vid= ao href para o app herdar o visitor_id
+  //    Isso fecha o círculo: post lido → CTA → app → compra = mesma pessoa
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+
+    var isAppLink = href.includes('hub.redatudo.online') ||
+                    href.includes('app.redatudo.online') ||
+                    href.includes('ebook.redatudo.online') ||
+                    href.includes('ia.redatudo.online');
+
+    if (isAppLink) {
+      // Injeta visitor_id na URL para o app herdar a sessão
+      try {
+        var url = new URL(href, window.location.origin);
+        url.searchParams.set('_rdtd_vid', vid);
+        link.setAttribute('href', url.toString());
+      } catch (_) {}
+
+      var m       = href.match(/https?:\/\/([^./]+)\.redatudo\.online/);
+      var appName = m ? m[1] : 'app';
+      rdTrack('cta_click', {
+        cta_text:  (link.textContent || '').trim().slice(0, 80),
+        app_name:  appName,
+        placement: getPlacement(link),
+      });
+    }
+  });
+
+  // ── 4. affiliate_click — saída para link de afiliado externo
+  //    Quem clicou + de qual post + qual link = qual parceiro converte mais
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+
+    var isExternal = href.startsWith('http') &&
+                     !href.includes('redatudo.online') &&
+                     !href.startsWith(window.location.origin);
+    var isAffiliate = link.hasAttribute('data-ga4') &&
+                      link.getAttribute('data-ga4') === 'affiliate_click';
+    // Também captura qualquer link externo mesmo sem data-ga4
+    if (!isExternal && !isAffiliate) return;
+
+    rdTrack('affiliate_click', {
+      destination:   href.slice(0, 200),
+      link_text:     (link.textContent || '').trim().slice(0, 80),
+      placement:     getPlacement(link),
+      post_title:    PAGE_TYPE === 'post'
+        ? (document.querySelector('h1') || {}).textContent || ''
+        : '',
+    });
+  });
+
+  // ── 5. site_search — o que as pessoas buscam no site
+  document.querySelectorAll('#searchform, form[role="search"]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var q = form.querySelector('input[name="s"]');
+      rdTrack('site_search', {
+        search_term: q ? q.value.trim().slice(0, 100) : '',
+      });
+    });
+  });
+
+  // ── 6. time_on_page — ao sair (keepalive garante o envio)
+  //    Junto com page_type: "post" indica qual conteúdo tem engajamento real
+  window.addEventListener('pagehide', function () {
+    var seconds = Math.round((Date.now() - startTime) / 1000);
+    if (seconds < 5) return;
+    rdTrack('time_on_page', {
+      seconds: seconds,
+      title:   document.title.slice(0, 80),
+    });
+  });
+
+  // ── 7. return_visit — visitante recorrente (não logado)
+  //    Alta intenção de compra: voltou sem ter comprado ainda
+  var visitCount = parseInt(localStorage.getItem('_rdtd_visits') || '0', 10) + 1;
+  localStorage.setItem('_rdtd_visits', visitCount);
+  if (visitCount === 2) {
+    rdTrack('return_visit', { visit_number: visitCount });
+  } else if (visitCount > 2 && visitCount % 5 === 0) {
+    rdTrack('frequent_visitor', { visit_number: visitCount });
+  }
+
+})();
+</script>
+
 <?php wp_footer(); ?>
 </body>
 </html>

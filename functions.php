@@ -2246,3 +2246,49 @@ add_action('woocommerce_subscription_status_active', function($subscription): vo
         'plan'            => $subscription->get_items() ? array_values($subscription->get_items())[0]->get_name() : '',
     ], $user_id, $email);
 }, 10, 1);
+
+// — Checkout iniciado (criou o pedido mas ainda não pagou)
+//   Evento crítico: se não virar purchase_completed → recuperação de carrinho
+add_action('woocommerce_checkout_order_created', function(WC_Order $order): void {
+    $items = [];
+    foreach ($order->get_items() as $item) {
+        $items[] = $item->get_name();
+    }
+    rdtd_track('checkout_initiated', [
+        'order_id' => $order->get_id(),
+        'total'    => (float) $order->get_total(),
+        'currency' => get_woocommerce_currency(),
+        'products' => implode(', ', $items),
+    ], (int) $order->get_customer_id(), $order->get_billing_email());
+}, 10, 1);
+
+// — Primeira visita: UTM + landing + referrer (server-side, via cookie)
+//   JS já faz page_view, mas UTMs server-side garantem captura mesmo com
+//   bloqueadores de script. Cookie evita reenvio a cada página.
+add_action('init', function(): void {
+    $cookie = 'rdtd_first_visit';
+    if (isset($_COOKIE[$cookie])) return;
+
+    $referrer     = isset($_SERVER['HTTP_REFERER'])
+        ? esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER'])) : '';
+    $landing      = isset($_SERVER['REQUEST_URI'])
+        ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    $utm_source   = sanitize_text_field(wp_unslash($_GET['utm_source']   ?? ''));
+    $utm_medium   = sanitize_text_field(wp_unslash($_GET['utm_medium']   ?? ''));
+    $utm_campaign = sanitize_text_field(wp_unslash($_GET['utm_campaign'] ?? ''));
+    $utm_content  = sanitize_text_field(wp_unslash($_GET['utm_content']  ?? ''));
+    $utm_term     = sanitize_text_field(wp_unslash($_GET['utm_term']     ?? ''));
+
+    // Cookie 30 dias — evita reenvio
+    setcookie($cookie, '1', time() + 30 * DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
+
+    rdtd_track('first_visit', [
+        'landing_page' => $landing,
+        'referrer'     => $referrer,
+        'utm_source'   => $utm_source,
+        'utm_medium'   => $utm_medium,
+        'utm_campaign' => $utm_campaign,
+        'utm_content'  => $utm_content,
+        'utm_term'     => $utm_term,
+    ]);
+}, 20);
