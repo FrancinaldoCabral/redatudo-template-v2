@@ -21,94 +21,28 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "f1",
-              "name": "wp_user_id",
-              "value": "={{ $json.body.wp_user_id }}",
-              "type": "number"
-            },
-            {
-              "id": "f2",
-              "name": "email",
-              "value": "={{ $json.body.email }}",
-              "type": "string"
-            },
-            {
-              "id": "f3",
-              "name": "name",
-              "value": "={{ $json.body.name }}",
-              "type": "string"
-            },
-            {
-              "id": "f4",
-              "name": "event",
-              "value": "={{ $json.body.event }}",
-              "type": "string"
-            },
-            {
-              "id": "f5",
-              "name": "source",
-              "value": "={{ $json.body.source }}",
-              "type": "string"
-            },
-            {
-              "id": "f6",
-              "name": "properties",
-              "value": "={{ $json.body.properties }}",
-              "type": "object"
-            },
-            {
-              "id": "f7",
-              "name": "session_id",
-              "value": "={{ $json.body.session_id }}",
-              "type": "string"
-            },
-            {
-              "id": "f8",
-              "name": "ts",
-              "value": "={{ new Date().toISOString() }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "a1000003-0000-4000-8000-000000000003",
-      "name": "Build Event Document",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [480, 400]
-    },
-    {
-      "parameters": {
-        "operation": "insert",
-        "collection": "rdtd_events",
-        "options": {}
-      },
-      "id": "a1000004-0000-4000-8000-000000000004",
-      "name": "MongoDB Insert",
-      "type": "n8n-nodes-base.mongoDb",
-      "typeVersion": 1,
-      "position": [720, 400],
-      "credentials": {
-        "mongoDb": {
-          "id": "PLACEHOLDER_MONGO_CREDENTIAL_ID",
-          "name": "MongoDB rdtd"
+        "method": "POST",
+        "url": "https://api.redatudo.online/track",
+        "sendHeaders": false,
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "timeout": 10000
         }
-      }
+      },
+      "id": "a1000002-0000-4000-8000-000000000002",
+      "name": "Forward to Track API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 400],
+      "continueOnFail": true
     }
   ],
   "connections": {
     "Webhook rdtd-events": {
       "main": [
-        [{ "node": "Build Event Document", "type": "main", "index": 0 }]
-      ]
-    },
-    "Build Event Document": {
-      "main": [
-        [{ "node": "MongoDB Insert", "type": "main", "index": 0 }]
+        [{ "node": "Forward to Track API", "type": "main", "index": 0 }]
       ]
     }
   }
