@@ -62,34 +62,41 @@ function rdtd_track_event_handler(WP_REST_Request $request) {
         return new WP_REST_Response(['ok' => false, 'error' => 'no_email'], 400);
     }
 
-    // Monta tags (prefixo rdtd_ para não colidir com tags manuais)
-    $tags = [
-        'rdtd_app_' . $source,
-        'rdtd_event_' . $event,
-    ];
+    // Eventos de alta frequência: só atualiza Mautic para WhatsApp, sem adicionar tags.
+    $high_frequency = ['section_generated', 'user_identified'];
+    if (in_array($event, $high_frequency, true)) {
+        return new WP_REST_Response(['ok' => true, 'skipped' => true], 200);
+    }
+
+    // Marcos únicos — cada tag é idempotente no Mautic (adicionar de novo não duplica)
+    $tags = [];
 
     switch ($event) {
         case 'user_registered':
-            $tags[] = 'rdtd_new_user';
+            $tags = ['rdtd_new_user', 'rdtd_app_wordpress'];
             break;
         case 'project_created':
+            $tags = ['rdtd_used_ebookflow'];
             if (!empty($props['mode']))  $tags[] = 'rdtd_mode_'  . sanitize_text_field($props['mode']);
             if (!empty($props['genre'])) $tags[] = 'rdtd_genre_' . sanitize_text_field($props['genre']);
             break;
         case 'export_completed':
+            $tags = ['rdtd_exported'];
             if (!empty($props['format'])) $tags[] = 'rdtd_export_' . sanitize_text_field($props['format']);
             break;
         case 'credits_low':
         case 'limit_reached':
-            $tags[] = 'rdtd_needs_upgrade';
+            $tags = ['rdtd_needs_upgrade'];
             break;
         case 'upgrade_clicked':
-            $tags[] = 'rdtd_upgrade_intent';
+            $tags = ['rdtd_upgrade_intent'];
             break;
         case 'credits_purchased':
-            // Remove flag de upgrade quando comprar
-            $tags[] = 'rdtd_paid_user';
+            $tags = ['rdtd_paid_user'];
             break;
+        default:
+            // Evento desconhecido: ignora silenciosamente
+            return new WP_REST_Response(['ok' => true, 'skipped' => true], 200);
     }
 
     // Busca ou cria contato no Mautic (retorna array completo do contato)
