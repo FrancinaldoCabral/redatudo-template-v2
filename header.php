@@ -56,18 +56,6 @@
 
 <?php wp_head(); ?>
 
-<?php if ( is_single() ) : ?>
-<!-- Mautic tracking (URL: replace MAUTIC_URL with your Mautic instance URL) -->
-<script>
-(function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
-w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},
-a=d.createElement(t),m=d.getElementsByTagName(t)[0];
-a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://conteudo.redatudo.online/mtc.js','mt');
-mt('send', 'pageview');
-</script>
-<?php endif; ?>
-
 <!-- Estilo visual Redatudo 2.0 - Sistema Unificado -->
 <style>
 /* Sobrescrever estilos específicos do tema - mantém compatibilidade */

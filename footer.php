@@ -247,10 +247,18 @@ document.addEventListener('click', function(e) {
 (function () {
   'use strict';
 
-  // Wrapper seguro: só dispara se gtag existir (Site Kit ou gtag.js)
+  // Wrapper seguro para GA4 via Site Kit
+  // Não usa send_to: evita descartar eventos por ID inválido
+  // Usa dataLayer como fallback se gtag ainda não estiver pronto
   function rdGA4(eventName, params) {
-    if (typeof window.gtag !== 'function') return;
-    window.gtag('event', eventName, Object.assign({ send_to: 'GA4' }, params || {}));
+    var p = Object.assign({}, params || {});
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', eventName, p);
+    } else {
+      // Site Kit ainda carregando: empurra via dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: eventName }, p));
+    }
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────
@@ -631,5 +639,16 @@ document.addEventListener('click', function(e) {
 </script>
 
 <?php wp_footer(); ?>
+
+<?php if ( is_single() ) : ?>
+<script>
+(function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
+w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},
+a=d.createElement(t),m=d.getElementsByTagName(t)[0];
+a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://conteudo.redatudo.online/mtc.js','mt');
+mt('send', 'pageview');
+</script>
+<?php endif; ?>
 </body>
 </html>
