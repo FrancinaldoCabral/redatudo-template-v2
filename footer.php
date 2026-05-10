@@ -427,7 +427,7 @@ document.addEventListener('click', function(e) {
 (function () {
   'use strict';
 
-  var TRACK_URL = 'https://api.redatudo.online/track';
+  var TRACK_URL = 'https://api.redatudo.online/api/track';
 
   // ── Identity ──────────────────────────────────────────────────────────
   // wp_user_id injetado pelo PHP (wp_head) se estiver logado
